@@ -268,47 +268,31 @@
         </div>
     </div>
     <script>
-        console.log('スクリプト読み込み開始');
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM読み込み完了');
-
             const divisionSelector = document.getElementById('division-selector');
             const userSelector = document.getElementById('user-selector');
 
             if (divisionSelector && userSelector) {
-                console.log('両方の要素が見つかりました');
-
                 // 全ユーザーオプションを保存
                 const allUserOptions = Array.from(userSelector.options).slice();
-                console.log('全ユーザーオプション:', allUserOptions.length);
-
-                // 各オプションのdata-division-idを確認
-                allUserOptions.forEach((option, index) => {
-                    console.log(
-                        `ユーザー ${index}: ${option.text}, ID: ${option.value}, Division: "${option.dataset.divisionId}"`
-                        );
-                });
 
                 // ページ読み込み時のフィルタリング
                 filterUsersByDivision(divisionSelector.value);
 
                 // 部署変更時の処理
                 divisionSelector.addEventListener('change', function() {
-                    console.log('部署が変更されました:', this.value);
                     filterUsersByDivision(this.value);
                 });
 
                 // ユーザー変更時の処理
                 userSelector.addEventListener('change', function() {
-                    console.log('ユーザーが変更されました:', this.value);
-                    if (this.value !== '') { // 空の値（-選択してください-）以外の場合のみ遷移
+                    if (this.value !== '') {
                         redirectToUser(this.value);
                     }
                 });
 
                 // フィルタリング関数
                 function filterUsersByDivision(selectedDivisionId) {
-                    console.log('フィルタリング実行 - 部署ID:', selectedDivisionId);
                     userSelector.innerHTML = '';
 
                     // 最初に「-選択してください-」オプションを追加
@@ -318,25 +302,16 @@
                     defaultOption.selected = true;
                     userSelector.appendChild(defaultOption);
 
-                    let filteredCount = 0;
-
                     allUserOptions.forEach(option => {
                         const shouldShow = selectedDivisionId === '' || option.dataset.divisionId ===
                             selectedDivisionId;
-                        console.log(
-                            `${option.text}: divisionId="${option.dataset.divisionId}", shouldShow=${shouldShow}`
-                            );
 
                         if (shouldShow) {
                             const newOption = option.cloneNode(true);
-                            // 部署絞り込み後は選択状態をリセット
                             newOption.selected = false;
                             userSelector.appendChild(newOption);
-                            filteredCount++;
                         }
                     });
-
-                    console.log('フィルタリング結果:', filteredCount, '人表示');
                 }
 
                 // ページ遷移関数
@@ -344,7 +319,6 @@
                     const year = {{ $year }};
                     const week_number = {{ $week_number }};
                     const url = `/weekly-reports/${userId}/${year}/${week_number}`;
-                    console.log('遷移先URL:', url);
                     window.location.href = url;
                 }
             }
