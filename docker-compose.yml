@@ -9,7 +9,7 @@ services:
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
-            - '${APP_PORT:-80}:80'
+            - '8001:80'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
         environment:
             WWWUSER: '${WWWUSER}'
@@ -30,7 +30,7 @@ services:
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
-            - '${FORWARD_DB_PORT:-3306}:3306'
+            - '3308:3306'
         environment:
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ROOT_HOST: '%'
@@ -101,6 +101,18 @@ services:
             - '/dev/shm:/dev/shm'
         networks:
             - sail
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - '8082:80' # ホストPCの8082番ポートを、phpMyAdminコンテナの80番ポートに繋ぐ
+        environment:
+            PMA_HOST: mysql # 接続先のホスト名は「mysql」サービスを指定
+            PMA_PORT: 3306  # mysqlコンテナの内部ポートを指定
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}' # .envファイルからパスワードを読み込む
+        networks:
+            - sail
+        depends_on:
+            - mysql # mysqlサービスが起動してからphpmyadminを起動させる
 networks:
     sail:
         driver: bridge
