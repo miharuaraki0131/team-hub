@@ -15,12 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->date('report_date')->comment('報告日');
-            $table->text('summary_today')->comment('今日やったこと');
-            $table->text('discrepancy')->comment('目標との差異');
-            $table->text('summary_tomorrow')->comment('明日やること');
-            $table->text('issues_thoughts')->comment('困っていることや感想');
-            $table->softDeletes();
+            $table->text('summary_today')->nullable()->comment('今日やったこと');
+            $table->text('discrepancy')->nullable()->comment('目標との差異');
+            $table->text('summary_tomorrow')->nullable()->comment('明日やること');
+            $table->text('issues_thoughts')->nullable()->comment('困っていることや感想');
             $table->timestamps();
+            $table->softDeletes();
+
+            // 複合ユニークキーで、一人のユーザーが同じ日に2つ日報を作れないようにする
+            $table->unique(['user_id', 'report_date']);
         });
     }
 

@@ -7,10 +7,10 @@
     </a>
 
     {{-- 中央：ナビゲーションリンク --}}
-    <div class="hidden lg:flex items-center gap-6 text-white font-medium">
+    <div class="hidden lg:flex items-center gap-6  font-medium">
         <a href="{{ route('dashboard') }}" class="hover:text-white/80 transition-colors">ダッシュボード</a>
-        <a href="{{ route('equipments.index') }}" class="hover:text-white/80 transition-colors">備品一覧</a>
-        <a href="{{ route('my.reservations.index') }}" class="hover:text-white/80 transition-colors">マイ予約</a>
+        {{-- <a href="{{ route('equipments.index') }}" class="hover:text-white/80 transition-colors">備品一覧</a>
+        <a href="{{ route('my.reservations.index') }}" class="hover:text-white/80 transition-colors">マイ予約</a> --}}
     </div>
 
     {{-- 右側：通知とユーザーメニュー --}}
@@ -39,9 +39,9 @@
                          class="absolute z-50 mt-2 w-48 rounded-md shadow-lg origin-top-right right-0"
                          style="display: none;">
                         <div class="rounded-md ring-1 ring-black ring-opacity-5 py-1 bg-white">
-                            <a href="{{ route('admin.users.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ユーザー管理</a>
+                            {{-- <a href="{{ route('admin.users.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ユーザー管理</a>
                             <a href="{{ route('admin.approvals.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">承認待ち一覧</a>
-                            <a href="{{ route('admin.reservations.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">貸出・返却管理</a>
+                            <a href="{{ route('admin.reservations.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">貸出・返却管理</a> --}}
                         </div>
                     </div>
                 </div>
