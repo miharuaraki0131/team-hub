@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\DailyReport;
 use App\Models\User;
+use App\Models\Division;
+use App\Models\NotificationDestination;
+use App\Notifications\DailyReportUpdated;
+use Illuminate\Support\Facades\Notification;
 
 class DailyReportController extends Controller
 {
@@ -71,7 +75,7 @@ class DailyReportController extends Controller
         $validated = $request->validated();
 
         // --- 3. データの保存・更新 ---
-        DailyReport::updateOrCreate(
+        $dailyReport = DailyReport::updateOrCreate(
             [
                 // 検索条件には、URLから受け取った、信頼できるパラメータを使う
                 'user_id' => $user->id,
@@ -86,7 +90,21 @@ class DailyReportController extends Controller
             ]
         );
 
-        // --- 4. リダイレクト ---
+        // 4. 部署を取得し、その部署に紐づく全ての通知先を「Eager Loading」で一緒に取得する
+        $division = $dailyReport->user->division()->with('notificationDestinations')->first();
+
+        // 5. 通知先が存在するかチェック
+        if ($division && $division->notificationDestinations->isNotEmpty()) {
+
+            // 6. 全ての通知先メールアドレスを、配列として抽出する
+            $emails = $division->notificationDestinations->pluck('email')->all();
+
+            // 7. Notificationファサードで、複数のアドレスに一斉に通知を送る！
+            Notification::route('mail', $emails)
+                ->notify(new DailyReportUpdated($dailyReport));
+        }
+
+        // --- 8. リダイレクト ---
         $reportDate = Carbon::parse($date);
         return redirect()->route('weekly-reports.show', [
             'user' => $user, // ここでもURLから受け取った$userオブジェクトをそのまま使える

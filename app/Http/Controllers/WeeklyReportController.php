@@ -27,6 +27,7 @@ class WeeklyReportController extends Controller
         // --- 1. 時間の基準点を設定 ---
         $date = Carbon::now();
         $date->setISODate($year, $week_number); // 指定された年と週の月曜日
+        $today = Carbon::today();
 
         // --- 2. 週の始まりと終わりを計算 ---
         $startOfWeek = $date->copy()->startOfWeek(Carbon::MONDAY);
@@ -56,11 +57,17 @@ class WeeklyReportController extends Controller
         $divisions = Division::orderBy('name')->get(); // 全ての部署を取得
         $users = User::orderBy('name')->with('division')->get();
 
+        // 2. 「今日の日報」の提出状況を取得
+        $todaysReport = DailyReport::where('user_id', $user->id)
+            ->where('report_date', $today->format('Y-m-d'))
+            ->first();
+
         // --- 4. ビューに、すべてのデータを渡す ---
         return view('weekly-reports.show', [
             'user' => $user,
             'users' => $users,
             'divisions' => $divisions,
+             'todaysReportExists' => $todaysReport !== null,
             'year' => $year,
             'week_number' => $week_number,
             'startOfWeek' => $startOfWeek,

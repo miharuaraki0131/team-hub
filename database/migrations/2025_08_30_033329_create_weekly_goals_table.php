@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->integer('year');
             $table->integer('week_number')->comment('週番号 (1-53)');
-            $table->text('goal_this_week')->comment('今週の目標・総括');
-            $table->text('plan_next_week')->comment('来週の予定');
+            $table->text('goal_this_week')->nullable()->comment('今週の目標・総括');
+            $table->text('plan_next_week')->nullable()->comment('来週の予定');
             $table->timestamps();
         });
     }

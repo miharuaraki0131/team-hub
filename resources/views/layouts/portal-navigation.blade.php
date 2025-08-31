@@ -8,7 +8,7 @@
 
     {{-- 中央：ナビゲーションリンク --}}
     <div class="hidden lg:flex items-center gap-6  font-medium">
-        <a href="{{ route('dashboard') }}" class="hover:text-white/80 transition-colors">ダッシュボード</a>
+        {{-- <a href="{{ route('dashboard') }}" class="hover:text-white/80 transition-colors">ダッシュボード</a> --}}
         {{-- <a href="{{ route('equipments.index') }}" class="hover:text-white/80 transition-colors">備品一覧</a>
         <a href="{{ route('my.reservations.index') }}" class="hover:text-white/80 transition-colors">マイ予約</a> --}}
     </div>

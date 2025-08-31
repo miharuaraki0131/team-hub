@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DailyReportController;
 use App\Http\Controllers\WeeklyReportController;
 use App\Http\Controllers\WeeklyGoalController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KnowledgeController;
+use App\Http\Controllers\EventController;
+
 
 
 
@@ -13,9 +17,11 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/logout', function () {
+    return redirect()->route('login');
+});
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -43,6 +49,13 @@ Route::middleware('auth')->group(function () {
         // 週の目標の保存・更新処理
         Route::post('/{user}/{year}/{week_number}', [WeeklyGoalController::class, 'storeOrUpdate'])->name('storeOrUpdate');
     });
+
+    // 共有事項 (Knowledges)
+    Route::resource('knowledges', KnowledgeController::class);
+
+    // カレンダー表示 (Events)
+    Route::get('/events/json', [EventController::class, 'getEvents'])->name('events.json');
+    Route::resource('events', EventController::class);
 });
 
 require __DIR__ . '/auth.php';
