@@ -98,9 +98,10 @@
                             class="block w-full px-4 py-3 text-center text-sm font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
                             🏠 自分の今週の週報
                         </a>
-                        <a href="{{ route('daily-reports.edit', ['user' => Auth::user(), 'date' => now()->format('Y-m-d')]) }}"
-                            class="block w-full px-4 py-3 text-center text-sm font-bold bg-yellow-400 hover:bg-yellow-500 text-gray-800 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
-                            📝 今日の日報を書く
+                        {{-- 日報関連 --}}
+                        <a href="{{ route('daily-reports.edit', ['user' => $user, 'date' => Carbon\Carbon::today()->format('Y-m-d')]) }}"
+                            class="block w-full px-4 py-3 text-center text-sm font-bold {{ $todaysReportExists ? 'bg-blue-500 hover:bg-blue-600' : 'bg-yellow-400 hover:bg-yellow-500' }} {{ $todaysReportExists ? 'text-white' : 'text-gray-800' }} rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                            {{ $todaysReportExists ? '✏️ 今日の日報を編集' : '📝 今日の日報を作成' }}
                         </a>
                     </div>
                 </div>
