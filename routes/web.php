@@ -6,11 +6,16 @@ use App\Http\Controllers\DailyReportController;
 use App\Http\Controllers\WeeklyReportController;
 use App\Http\Controllers\WeeklyGoalController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KnowledgeController;
 
 
 
 // ログインページに遷移
 Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+Route::get('/logout', function () {
     return redirect()->route('login');
 });
 
@@ -42,6 +47,9 @@ Route::middleware('auth')->group(function () {
         // 週の目標の保存・更新処理
         Route::post('/{user}/{year}/{week_number}', [WeeklyGoalController::class, 'storeOrUpdate'])->name('storeOrUpdate');
     });
+
+    // 共有事項 (Knowledges)
+    Route::resource('knowledges', KnowledgeController::class);
 });
 
 require __DIR__ . '/auth.php';

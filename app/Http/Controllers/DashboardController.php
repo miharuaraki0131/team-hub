@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\DailyReport;
 use App\Models\WeeklyGoal;
 use App\Models\User;
+use App\Models\Knowledge;
 
 class DashboardController extends Controller
 {
@@ -34,13 +35,24 @@ class DashboardController extends Controller
             ->where('week_number', $today->weekOfYear)
             ->first();
 
-        // === チームデータ（将来の拡張用） ===
-        // 4. 同じ部署のメンバーの日報提出状況を取得
+
+        // === チームデータ ===
+
+        // 1. 最新の共有事項を取得
+        $latestKnowledges = Knowledge::with('user')
+            ->published()
+            ->orderBy('is_pinned', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->limit(6) // ダッシュボードには最新6件を表示
+            ->get();
+
+
+        // 2. 同じ部署のメンバーの日報提出状況を取得
         $teamMembers = collect(); // 空のコレクションで初期化
         if ($user->division_id) {
             $teamMembers = User::where('division_id', $user->division_id)
                 ->where('id', '!=', $user->id) // 自分以外
-                ->with(['dailyReports' => function($query) use ($today) {
+                ->with(['dailyReports' => function ($query) use ($today) {
                     $query->where('report_date', $today->format('Y-m-d'));
                 }])
                 ->get();
@@ -51,6 +63,7 @@ class DashboardController extends Controller
             'todaysPlan' => $todaysPlan,
             'todaysReportExists' => $todaysReport !== null,
             'thisWeeksGoal' => $thisWeeksGoal,
+            'latestKnowledges' => $latestKnowledges,
             'teamMembers' => $teamMembers, // チーム情報を追加
         ]);
     }

@@ -94,13 +94,13 @@
                         <div class="grid grid-cols-2 gap-2">
                             <a href="https://zoom.us/j/8691403369?omn=96848537844#success"
                                 class="flex flex-col items-center p-3 bg-white hover:bg-blue-100 border-2 border-gray-300 hover:border-blue-400 rounded-lg transition-all duration-200 text-gray-800 text-xs font-bold"
-                                target="_blank" rel="noopener noreferrer" >
+                                target="_blank" rel="noopener noreferrer">
                                 <span class="text-lg mb-1">📹</span>
                                 <span>Zoom</span>
                             </a>
                             <a href="https://github.com/Mechatron-3rd"
                                 class="flex flex-col items-center p-3 bg-white hover:bg-blue-100 border-2 border-gray-300 hover:border-blue-400 rounded-lg transition-all duration-200 text-gray-800 text-xs font-bold"
-                                target="_blank" rel="noopener noreferrer" >
+                                target="_blank" rel="noopener noreferrer">
                                 <span class="text-lg mb-1">🐙</span>
                                 <span>GitHub</span>
                             </a>
@@ -132,19 +132,62 @@
                         <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                             <span class="mr-3">📢</span>共有事項・お知らせ
                         </h2>
-                        <button
-                            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all duration-200 shadow-md hover:shadow-lg">
-                            ➕ 新規投稿
-                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="location.href='{{ route('knowledges.index') }}'"
+                                class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl font-bold text-sm transition-all duration-200 shadow-md hover:shadow-lg">
+                                一覧へ
+                            </button>
+                            <button onclick="location.href='{{ route('knowledges.create') }}'"
+                                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all duration-200 shadow-md hover:shadow-lg">
+                                ➕ 新規投稿
+                            </button>
+                        </div>
                     </div>
 
                     <div class="p-6">
-                        {{-- ここに将来的にナレッジハブの投稿一覧が入る --}}
-                        <div class="text-center py-12 text-gray-500">
-                            <span class="text-6xl block mb-4">📝</span>
-                            <p class="text-lg font-medium">まだ投稿がありません</p>
-                            <p class="text-sm mt-2">チームの情報を共有してみましょう！</p>
-                        </div>
+                        @if ($latestKnowledges->isEmpty())
+                            {{-- 投稿がない場合の表示 --}}
+                            <div class="text-center py-12 text-gray-500">
+                                <span class="text-6xl block mb-4">📝</span>
+                                <p class="text-lg font-medium">まだ投稿がありません</p>
+                                <p class="text-sm mt-2">チームの情報を共有してみましょう！</p>
+                            </div>
+                        @else
+                            {{-- カードグリッド --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                @foreach ($latestKnowledges as $knowledge)
+                                    <a href="{{ route('knowledges.show', $knowledge) }}"
+                                        class="block bg-white rounded-xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1 p-6">
+
+                                        {{-- カードヘッダー --}}
+                                        <div class="flex items-start justify-between mb-3">
+                                            <span class="font-bold text-lg text-gray-800 break-words">
+                                                {{ $knowledge->title }}
+                                            </span>
+                                            @if ($knowledge->is_pinned)
+                                                <span
+                                                    class="ml-2 flex-shrink-0 text-xs font-bold bg-red-500 text-white px-2 py-1 rounded-full">📌
+                                                    重要</span>
+                                            @endif
+                                        </div>
+
+                                        {{-- 本文の抜粋 --}}
+                                        <p class="text-gray-600 text-sm leading-relaxed">
+                                            {{-- Knowledgeモデルに getExcerpt() メソッドを実装する必要があります --}}
+                                            {{ $knowledge->getExcerpt(80) }}
+                                        </p>
+
+                                        {{-- カードフッター（投稿者情報） --}}
+                                        <div class="mt-4 pt-4 border-t border-gray-200 text-right">
+                                            <span class="text-xs text-gray-500">
+                                                👤 {{ $knowledge->user->name }} @
+                                                {{ $knowledge->created_at->format('m/d') }}
+                                            </span>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
 
