@@ -42,7 +42,7 @@
                                 <span class="text-2xl mr-3">✅</span>
                                 <div>
                                     <div class="font-bold">日報提出済み</div>
-                                    <div class="text-sm text-gray-600">今日のお疲れ様でした！</div>
+                                    <div class="text-sm text-gray-600">今日もお疲れ様でした！</div>
                                 </div>
                             </div>
                         @else
@@ -195,21 +195,63 @@
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                     <div class="bg-green-100 border-b-2 border-gray-200 p-6 flex justify-between items-center">
                         <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-                            <span class="mr-3">📅</span>チームカレンダー
+                            <span class="mr-3">📅</span>今週の予定
                         </h2>
-                        <button
+                        <a href="{{ route('events.index') }}"
                             class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm transition-all duration-200 shadow-md hover:shadow-lg">
-                            ➕ 予定を追加
-                        </button>
+                            カレンダー全体を見る
+                        </a>
                     </div>
 
                     <div class="p-6">
-                        {{-- ここに将来的にFullCalendar.jsのカレンダーが入る --}}
-                        <div class="text-center py-12 text-gray-500">
-                            <span class="text-6xl block mb-4">📆</span>
-                            <p class="text-lg font-medium">カレンダー機能を準備中</p>
-                            <p class="text-sm mt-2">FullCalendar.jsを使用した共有カレンダーを実装予定です</p>
-                        </div>
+                        @if ($thisWeeksEvents->isEmpty())
+                            <div class="text-center py-12 text-gray-500">
+                                <span class="text-6xl block mb-4">🎉</span>
+                                <p class="text-lg font-medium">今週はまだ予定がありません</p>
+                            </div>
+                        @else
+                            {{-- [ここからが魔法] グリッドレイアウトを定義 --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4">
+
+                                {{-- [重要] 日付ごとにグループ化するために、まずコレクションを整形する --}}
+                                @foreach ($thisWeeksEvents->groupBy(function ($event) {
+                                            return $event->start_datetime->format('Y-m-d');
+                                        }) as $date => $eventsOnDate)
+                                    {{-- 日付ごとのカラム --}}
+                                    <div class="flex flex-col">
+                                        {{-- 日付ヘッダー --}}
+                                        <div class="mb-2">
+                                            <span
+                                                class="font-bold text-lg text-gray-700 bg-gray-100 px-3 py-1 rounded-lg">
+                                                {{ \Carbon\Carbon::parse($date)->isoFormat('M月D日 (ddd)') }}
+                                            </span>
+                                        </div>
+
+                                        {{-- その日の予定をループ --}}
+                                        <div class="flex flex-col gap-2">
+                                            @foreach ($eventsOnDate as $event)
+                                                <a href="{{ route('events.show', $event) }}"
+                                                    class="block p-3 rounded-lg hover:bg-gray-50 border-l-4"
+                                                    style="border-color: {{ $event->color }};">
+                                                    <p class="font-bold text-sm text-gray-800">{{ $event->title }}</p>
+                                                    <div
+                                                        class="text-xs text-gray-500 flex justify-between items-center mt-1">
+                                                        <span>
+                                                            @if ($event->is_all_day)
+                                                                終日
+                                                            @else
+                                                                {{ $event->start_datetime->format('H:i') }}
+                                                            @endif
+                                                        </span>
+                                                        <span>by {{ $event->user->name }}</span>
+                                                    </div>
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
 

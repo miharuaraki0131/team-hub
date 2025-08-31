@@ -9,6 +9,7 @@ use App\Models\DailyReport;
 use App\Models\WeeklyGoal;
 use App\Models\User;
 use App\Models\Knowledge;
+use App\Models\Event;
 
 class DashboardController extends Controller
 {
@@ -58,6 +59,18 @@ class DashboardController extends Controller
                 ->get();
         }
 
+        // 3. 今週の予定を取得
+
+        // 「今週」の始まり（月曜日）と終わり（日曜日）を定義
+        $startOfWeek = now()->startOfWeek(Carbon::MONDAY);
+        $endOfWeek = now()->endOfWeek(Carbon::SUNDAY);
+
+        // 今週の予定を取得
+        $thisWeeksEvents = Event::visibleTo(Auth::id())
+            ->whereBetween('start_datetime', [$startOfWeek, $endOfWeek])
+            ->orderBy('start_datetime')
+            ->get();
+
         return view('dashboard', [
             'user' => $user,
             'todaysPlan' => $todaysPlan,
@@ -65,6 +78,7 @@ class DashboardController extends Controller
             'thisWeeksGoal' => $thisWeeksGoal,
             'latestKnowledges' => $latestKnowledges,
             'teamMembers' => $teamMembers, // チーム情報を追加
+            'thisWeeksEvents' => $thisWeeksEvents, // 今週の予定を追加
         ]);
     }
 }

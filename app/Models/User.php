@@ -61,4 +61,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Knowledge::class);
     }
+
+    public function dailyReports(): HasMany
+    {
+        return $this->hasMany(DailyReport::class);
+    }
+
+    public function weeklyGoals(): HasMany
+    {
+        return $this->hasMany(WeeklyGoal::class);
+    }
+
+    public function events(): HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
+
 }

@@ -13,4 +13,9 @@ class Division extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function notificationDestinations(): HasMany
+    {
+        return $this->hasMany(NotificationDestination::class);
+    }
 }

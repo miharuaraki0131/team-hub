@@ -7,6 +7,8 @@ use App\Http\Controllers\WeeklyReportController;
 use App\Http\Controllers\WeeklyGoalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KnowledgeController;
+use App\Http\Controllers\EventController;
+
 
 
 
@@ -50,6 +52,10 @@ Route::middleware('auth')->group(function () {
 
     // 共有事項 (Knowledges)
     Route::resource('knowledges', KnowledgeController::class);
+
+    // カレンダー表示 (Events)
+    Route::get('/events/json', [EventController::class, 'getEvents'])->name('events.json');
+    Route::resource('events', EventController::class);
 });
 
 require __DIR__ . '/auth.php';
