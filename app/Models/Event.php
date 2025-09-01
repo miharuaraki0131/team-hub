@@ -85,8 +85,8 @@ class Event extends Model
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'start' => $this->start_datetime->toISOString(),
-            'end' => $this->end_datetime->toISOString(),
+            'start' => $this->is_all_day ? $this->start_datetime->format('Y-m-d') : $this->start_datetime->toISOString(),
+            'end' => $this->is_all_day ? $this->end_datetime->format('Y-m-d') : $this->end_datetime->toISOString(),
             'allDay' => $this->is_all_day,
             'backgroundColor' => $this->color,
             'borderColor' => $this->color,
