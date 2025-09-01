@@ -5,105 +5,109 @@
         {{-- =============================================== --}}
         {{-- 左サイドバー：「私のコックピット」（固定幅） --}}
         {{-- =============================================== --}}
-        <div
-            class="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col fixed overflow-y-auto mt-8 rounded-r-2xl">
-            {{-- サイドバーヘッダー --}}
-            <div class="p-6 bg-slate-100 border-b border-gray-200">
-                <h2 class="text-xl font-bold text-gray-800 mb-2">🏠 私のコックピット</h2>
-                <p class="text-sm text-gray-600">
-                    {{ Carbon\Carbon::today()->format('Y年m月d日') }}（{{ Carbon\Carbon::today()->isoFormat('ddd') }}曜日）</p>
-            </div>
-
-            {{-- コックピット内容 --}}
-            <div class="flex-1 p-6 space-y-8">
-
-                {{-- 今日のToDo --}}
-                <div>
-                    <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-400">
-                        ✅ 今日やること
-                    </label>
-                    <div class="bg-white p-4 rounded-xl border-2 border-gray-300 text-sm text-gray-800 min-h-[80px]">
-                        @if ($todaysPlan)
-                            {!! nl2br(e($todaysPlan)) !!}
-                        @else
-                            <span class="text-gray-500 italic">昨日の日報から自動取得します</span>
-                        @endif
-                    </div>
+        <div class="">
+            <div
+                class="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col fixed overflow-y-auto mt-8 rounded-r-2xl">
+                {{-- サイドバーヘッダー --}}
+                <div class="p-6 bg-slate-100 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">🏠 私のコックピット</h2>
+                    <p class="text-sm text-gray-600">
+                        {{ Carbon\Carbon::today()->format('Y年m月d日') }}（{{ Carbon\Carbon::today()->isoFormat('ddd') }}曜日）
+                    </p>
                 </div>
 
-                {{-- 今日の進捗状況 --}}
-                <div>
-                    <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-green-400">
-                        📊 今日の進捗
-                    </label>
-                    <div class="bg-white p-4 rounded-xl border-2 border-gray-300">
-                        @if ($todaysReportExists)
-                            <div class="flex items-center text-green-700">
-                                <span class="text-2xl mr-3">✅</span>
-                                <div>
-                                    <div class="font-bold">日報提出済み</div>
-                                    <div class="text-sm text-gray-600">今日もお疲れ様でした！</div>
+                {{-- コックピット内容 --}}
+                <div class="flex-1 p-6 space-y-8">
+
+                    {{-- 今日のToDo --}}
+                    <div>
+                        <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-400">
+                            ✅ 今日やること
+                        </label>
+                        <div class="bg-white p-4 rounded-xl border-2 border-gray-300 text-sm text-gray-800 min-h-[80px]">
+                            @if ($todaysPlan)
+                                {!! nl2br(e($todaysPlan)) !!}
+                            @else
+                                <span class="text-gray-500 italic">昨日の日報から自動取得します</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- 今日の進捗状況 --}}
+                    <div>
+                        <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-green-400">
+                            📊 今日の進捗
+                        </label>
+                        <div class="bg-white p-4 rounded-xl border-2 border-gray-300">
+                            @if ($todaysReportExists)
+                                <div class="flex items-center text-green-700">
+                                    <span class="text-2xl mr-3">✅</span>
+                                    <div>
+                                        <div class="font-bold">日報提出済み</div>
+                                        <div class="text-sm text-gray-600">今日もお疲れ様でした！</div>
+                                    </div>
                                 </div>
-                            </div>
-                        @else
-                            <div class="flex items-center text-orange-700">
-                                <span class="text-2xl mr-3">📝</span>
-                                <div>
-                                    <div class="font-bold">日報未提出</div>
-                                    <div class="text-sm text-gray-600">今日の振り返りをしましょう</div>
+                            @else
+                                <div class="flex items-center text-orange-700">
+                                    <span class="text-2xl mr-3">📝</span>
+                                    <div>
+                                        <div class="font-bold">日報未提出</div>
+                                        <div class="text-sm text-gray-600">今日の振り返りをしましょう</div>
+                                    </div>
                                 </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- 今週の目標 --}}
+                    <div>
+                        <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-purple-400">
+                            🎯 今週の羅針盤
+                        </label>
+                        <div
+                            class="bg-white p-4 rounded-xl border-2 border-gray-300 text-sm text-gray-800 min-h-[60px]">
+                            @if ($thisWeeksGoal && $thisWeeksGoal->goal_this_week)
+                                {!! nl2br(e($thisWeeksGoal->goal_this_week)) !!}
+                            @else
+                                <span class="text-gray-500 italic">今週の目標を設定しましょう</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- クイックアクション --}}
+                    <div>
+                        <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-orange-400">
+                            ⚡ クイックアクション
+                        </label>
+                        <div class="space-y-3">
+
+                            {{-- 週報を見る --}}
+                            <a href="{{ route('weekly-reports.show', ['user' => $user, 'year' => Carbon\Carbon::today()->year, 'week_number' => Carbon\Carbon::today()->weekOfYear]) }}"
+                                class="block w-full px-4 py-3 text-center text-sm font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                                📊 自分の週報を見る
+                            </a>
+
+                            {{-- 日報関連 --}}
+                            <a href="{{ route('daily-reports.edit', ['user' => $user, 'date' => Carbon\Carbon::today()->format('Y-m-d')]) }}"
+                                class="block w-full px-4 py-3 text-center text-sm font-bold {{ $todaysReportExists ? 'bg-blue-500 hover:bg-blue-600' : 'bg-yellow-400 hover:bg-yellow-500' }} {{ $todaysReportExists ? 'text-white' : 'text-gray-800' }} rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                                {{ $todaysReportExists ? '✏️ 今日の日報を編集' : '📝 今日の日報を作成' }}
+                            </a>
+
+                            {{-- 外部リンク --}}
+                            <div class="grid grid-cols-2 gap-2">
+                                <a href="https://zoom.us/j/8691403369?omn=96848537844#success"
+                                    class="flex flex-col items-center p-3 bg-white hover:bg-blue-100 border-2 border-gray-300 hover:border-blue-400 rounded-lg transition-all duration-200 text-gray-800 text-xs font-bold"
+                                    target="_blank" rel="noopener noreferrer">
+                                    <span class="text-lg mb-1">📹</span>
+                                    <span>Zoom</span>
+                                </a>
+                                <a href="https://github.com/Mechatron-3rd"
+                                    class="flex flex-col items-center p-3 bg-white hover:bg-blue-100 border-2 border-gray-300 hover:border-blue-400 rounded-lg transition-all duration-200 text-gray-800 text-xs font-bold"
+                                    target="_blank" rel="noopener noreferrer">
+                                    <span class="text-lg mb-1">🐙</span>
+                                    <span>GitHub</span>
+                                </a>
                             </div>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- 今週の目標 --}}
-                <div>
-                    <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-purple-400">
-                        🎯 今週の羅針盤
-                    </label>
-                    <div class="bg-white p-4 rounded-xl border-2 border-gray-300 text-sm text-gray-800 min-h-[60px]">
-                        @if ($thisWeeksGoal && $thisWeeksGoal->goal_this_week)
-                            {!! nl2br(e($thisWeeksGoal->goal_this_week)) !!}
-                        @else
-                            <span class="text-gray-500 italic">今週の目標を設定しましょう</span>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- クイックアクション --}}
-                <div>
-                    <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-orange-400">
-                        ⚡ クイックアクション
-                    </label>
-                    <div class="space-y-3">
-
-                        {{-- 週報を見る --}}
-                        <a href="{{ route('weekly-reports.show', ['user' => $user, 'year' => Carbon\Carbon::today()->year, 'week_number' => Carbon\Carbon::today()->weekOfYear]) }}"
-                            class="block w-full px-4 py-3 text-center text-sm font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
-                            📊 自分の週報を見る
-                        </a>
-
-                        {{-- 日報関連 --}}
-                        <a href="{{ route('daily-reports.edit', ['user' => $user, 'date' => Carbon\Carbon::today()->format('Y-m-d')]) }}"
-                            class="block w-full px-4 py-3 text-center text-sm font-bold {{ $todaysReportExists ? 'bg-blue-500 hover:bg-blue-600' : 'bg-yellow-400 hover:bg-yellow-500' }} {{ $todaysReportExists ? 'text-white' : 'text-gray-800' }} rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
-                            {{ $todaysReportExists ? '✏️ 今日の日報を編集' : '📝 今日の日報を作成' }}
-                        </a>
-
-                        {{-- 外部リンク --}}
-                        <div class="grid grid-cols-2 gap-2">
-                            <a href="https://zoom.us/j/8691403369?omn=96848537844#success"
-                                class="flex flex-col items-center p-3 bg-white hover:bg-blue-100 border-2 border-gray-300 hover:border-blue-400 rounded-lg transition-all duration-200 text-gray-800 text-xs font-bold"
-                                target="_blank" rel="noopener noreferrer">
-                                <span class="text-lg mb-1">📹</span>
-                                <span>Zoom</span>
-                            </a>
-                            <a href="https://github.com/Mechatron-3rd"
-                                class="flex flex-col items-center p-3 bg-white hover:bg-blue-100 border-2 border-gray-300 hover:border-blue-400 rounded-lg transition-all duration-200 text-gray-800 text-xs font-bold"
-                                target="_blank" rel="noopener noreferrer">
-                                <span class="text-lg mb-1">🐙</span>
-                                <span>GitHub</span>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -215,8 +219,8 @@
 
                                 {{-- [重要] 日付ごとにグループ化するために、まずコレクションを整形する --}}
                                 @foreach ($thisWeeksEvents->groupBy(function ($event) {
-                                            return $event->start_datetime->format('Y-m-d');
-                                        }) as $date => $eventsOnDate)
+        return $event->start_datetime->format('Y-m-d');
+    }) as $date => $eventsOnDate)
                                     {{-- 日付ごとのカラム --}}
                                     <div class="flex flex-col">
                                         {{-- 日付ヘッダー --}}
