@@ -25,16 +25,7 @@
         {{-- =============================================== --}}
         {{-- ヘッダー：これは全てのページで共通 --}}
         {{-- =============================================== --}}
-        <header class="relative text-white">
-
-            {{-- 背景レイヤー（welcomeページと完全に同一） --}}
-            <div class="absolute inset-0">
-                <img src="{{ asset('images/header-background.jpg') }}" alt="Header Background"
-                    class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-black/60"></div>
-            </div>
-
-            {{-- コンテンツレイヤー --}}
+        <header class="bg-slate-200 relative">
             <div class="relative z-20">
 
                 {{-- ナビゲーション --}}
@@ -91,7 +82,7 @@
         {{-- スマホ用フッターナビゲーション：これも共通 --}}
         {{-- =============================================== --}}
         <nav
-            class="lg:hidden fixed bottom-0 left-0 right-0 bg-[var(--card-bg)] border-t border-[var(--border-color)] flex justify-around p-2 z-30 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+            class="bg-white lg:hidden fixed bottom-0 left-0 right-0 bg-[var(--card-bg)] border-t border-[var(--border-color)] flex justify-around p-2 z-30 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
             {{-- ダッシュボード --}}
             <a href="{{ route('dashboard') }}"
                 class="flex flex-col items-center p-2 text-[var(--text-light)] hover:text-[var(--primary-color)] transition-colors">
