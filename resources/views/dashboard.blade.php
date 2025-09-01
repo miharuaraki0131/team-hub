@@ -1,6 +1,6 @@
 {{-- resources/views/dashboard.blade.php --}}
 <x-portal-layout :showHero="false">
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen">
 
         {{-- レスポンシブ対応：PC時のみ2列、それ以外は1列 --}}
         <div class="lg:flex lg:gap-8 p-8">
