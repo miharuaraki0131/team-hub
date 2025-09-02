@@ -31,54 +31,14 @@
                 <img src="{{ asset('images/teamhub-header.png') }}" alt="Header Background"
                     class="w-full h-full object-cover">
                 {{-- オーバーレイ（半透明の黒） --}}
-                {{-- この数値を調整すると濃さが変わります (例: bg-black/30, bg-black/50) --}}
-                <div class="absolute inset-0 bg-black/40"></div>
+                <div class="absolute inset-0 bg-black/20"></div>
             </div>
 
             {{-- コンテンツレイヤー（ナビゲーションやヒーロー） --}}
-            {{-- z-10 から z-20 に変更（以前のコードとの整合性のため） --}}
             <div class="relative z-20">
 
                 {{-- ナビゲーション --}}
                 @include('layouts.portal-navigation')
-
-                {{-- ヒーローセクション（条件付きで表示） --}}
-                @if (isset($showHero) && $showHero)
-                    <div class="container mx-auto px-6 py-12 md:py-20 text-center">
-                        <h1 class="text-3xl md:text-5xl font-bold mb-4">
-                            {{ $heroTitle ?? '備品をスマートに管理' }}
-                        </h1>
-                        <p class="text-base md:text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-                            {{ $heroSubtitle ?? '必要な備品をいつでも、どこからでも。Team-hubがあなたの仕事をサポートします。' }}
-                        </p>
-
-                        {{-- ヒーローボタン（条件付きで表示） --}}
-                        @if (isset($showHeroButtons) && $showHeroButtons)
-                            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                                <a class="btn-primary w-full sm:w-auto"
-                                    href="{{ route('equipments.index', ['status' => 'available']) }}">
-                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path clip-rule="evenodd"
-                                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                                            fill-rule="evenodd"></path>
-                                    </svg>
-                                    <span>備品を予約する</span>
-                                </a>
-                                <a class="btn-secondary w-full sm:w-auto" href="{{ route('my.reservations.index') }}">
-                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                                        <path clip-rule="evenodd"
-                                            d="M4 5a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 011-1h6a1 1 0 110 2H8a1 1 0 01-1-1zm1 4a1 1 0 100 2h4a1 1 0 100-2H8z"
-                                            fill-rule="evenodd"></path>
-                                    </svg>
-                                    <span>予約履歴を見る</span>
-                                </a>
-                            </div>
-                        @endif
-                    </div>
-                @endif
             </div>
         </header>
 

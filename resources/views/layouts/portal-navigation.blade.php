@@ -1,5 +1,5 @@
 {{-- resources/views/layouts/portal-navigation.blade.php --}}
-<nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center relative z-30">
+<nav class="container text-white mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center relative z-30">
 
     {{-- 左側：ロゴ --}}
     <a class="text-3xl font-black tracking-wider  " href="{{ route('dashboard') }}">

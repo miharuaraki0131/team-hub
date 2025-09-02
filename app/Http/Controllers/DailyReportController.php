@@ -12,6 +12,7 @@ use App\Models\Division;
 use App\Models\NotificationDestination;
 use App\Notifications\DailyReportUpdated;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
 
 class DailyReportController extends Controller
 {
@@ -66,7 +67,6 @@ class DailyReportController extends Controller
     public function storeOrUpdate(StoreDailyReportRequest $request, User $user, string $date)
     {
         // --- 1. 認可 ---
-        //    フォームの隠しデータではなく、URLの{user}を正としてチェックする
         if ($user->id !== Auth::id()) {
             abort(403, 'アクセス権がありません。');
         }
@@ -77,12 +77,10 @@ class DailyReportController extends Controller
         // --- 3. データの保存・更新 ---
         $dailyReport = DailyReport::updateOrCreate(
             [
-                // 検索条件には、URLから受け取った、信頼できるパラメータを使う
                 'user_id' => $user->id,
-                'report_date' => $date, // $validated['report_date'] よりもURLの$dateが正
+                'report_date' => $date,
             ],
             [
-                // 更新/作成するデータは、バリデーション済みのものを使う
                 'summary_today' => $validated['summary_today'],
                 'discrepancy' => $validated['discrepancy'],
                 'summary_tomorrow' => $validated['summary_tomorrow'],
@@ -90,24 +88,29 @@ class DailyReportController extends Controller
             ]
         );
 
-        // 4. 部署を取得し、その部署に紐づく全ての通知先を「Eager Loading」で一緒に取得する
-        $division = $dailyReport->user->division()->with('notificationDestinations')->first();
+        // --- 4. 通知処理（最も安全な方法） ---
+        try {
+            // userが部署に所属している場合のみ通知処理を実行
+            if ($user->division_id) {
+                $division = Division::with('notificationDestinations')
+                    ->find($user->division_id);
 
-        // 5. 通知先が存在するかチェック
-        if ($division && $division->notificationDestinations->isNotEmpty()) {
+                if ($division && $division->notificationDestinations->isNotEmpty()) {
+                    $emails = $division->notificationDestinations->pluck('email')->all();
 
-            // 6. 全ての通知先メールアドレスを、配列として抽出する
-            $emails = $division->notificationDestinations->pluck('email')->all();
-
-            // 7. Notificationファサードで、複数のアドレスに一斉に通知を送る！
-            Notification::route('mail', $emails)
-                ->notify(new DailyReportUpdated($dailyReport));
+                    Notification::route('mail', $emails)
+                        ->notify(new DailyReportUpdated($dailyReport));
+                }
+            }
+        } catch (\Exception $e) {
+            // ログにエラーを記録するが、ユーザーには影響しないようにする
+            \Log::warning('日報通知の送信に失敗しました: ' . $e->getMessage());
         }
 
-        // --- 8. リダイレクト ---
+        // リダイレクトは必ず実行
         $reportDate = Carbon::parse($date);
         return redirect()->route('weekly-reports.show', [
-            'user' => $user, // ここでもURLから受け取った$userオブジェクトをそのまま使える
+            'user' => $user,
             'year' => $reportDate->year,
             'week_number' => $reportDate->weekOfYear,
         ])->with('success', '日報を保存しました！');
