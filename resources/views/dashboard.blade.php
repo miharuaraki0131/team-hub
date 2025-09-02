@@ -1,6 +1,6 @@
 {{-- resources/views/dashboard.blade.php --}}
 <x-portal-layout :showHero="false">
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen">
 
         {{-- レスポンシブ対応：PC時のみ2列、それ以外は1列 --}}
         <div class="lg:flex lg:gap-8 p-8">
@@ -139,7 +139,7 @@
 
                     {{-- 共有事項（ナレッジハブ） --}}
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                        <div class="bg-gray-50 border-b border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                        <div class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                             <h2 class="text-xl lg:text-2xl font-bold text-slate-800 flex items-center">
                                 <span class="text-green-600 mr-3">📢</span>共有事項・お知らせ
                             </h2>
@@ -149,7 +149,7 @@
                                     一覧へ
                                 </button>
                                 <button onclick="location.href='{{ route('knowledges.create') }}'"
-                                    class="px-4 lg:px-6 py-2 lg:py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xs lg:text-sm transition-all duration-200 shadow-md hover:shadow-lg">
+                                    class="px-4 lg:px-6 py-2 lg:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs lg:text-sm transition-all duration-200 shadow-md hover:shadow-lg">
                                     ➕ 新規投稿
                                 </button>
                             </div>
@@ -203,7 +203,7 @@
 
                     {{-- チームカレンダー（スケジュールハブ） --}}
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                        <div class="bg-gray-50 border-b border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                        <div class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                             <h2 class="text-xl lg:text-2xl font-bold text-slate-800 flex items-center">
                                 <span class="text-blue-600 mr-3">📅</span>今週の予定
                             </h2>
@@ -238,7 +238,7 @@
                                             <div class="flex flex-col gap-2">
                                                 @foreach ($eventsOnDate as $event)
                                                     <a href="{{ route('events.show', $event) }}"
-                                                        class="block p-3 rounded-lg hover:bg-gray-50 border-l-4"
+                                                        class="block p-3 rounded-lg hover:bg-slate-100 border-l-4"
                                                         style="border-color: {{ $event->color }};">
                                                         <p class="font-bold text-sm text-slate-800">{{ $event->title }}</p>
                                                         <div class="text-xs text-gray-500 flex justify-between items-center mt-1">
@@ -263,7 +263,7 @@
 
                     {{-- チームの活動状況（デイリーパルス） --}}
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                        <div class="bg-gray-50 border-b border-gray-200 p-4 lg:p-6">
+                        <div class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6">
                             <h2 class="text-xl lg:text-2xl font-bold text-slate-800 flex items-center">
                                 <span class="text-amber-600 mr-3">👥</span>チームのデイリーパルス
                             </h2>
