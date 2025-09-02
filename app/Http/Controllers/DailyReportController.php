@@ -104,7 +104,7 @@ class DailyReportController extends Controller
             }
         } catch (\Exception $e) {
             // ログにエラーを記録するが、ユーザーには影響しないようにする
-            \Log::warning('日報通知の送信に失敗しました: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('日報通知の送信に失敗しました: ' . $e->getMessage());
         }
 
         // リダイレクトは必ず実行
