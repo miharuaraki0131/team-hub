@@ -20,12 +20,23 @@
 
 </head>
 
-<body class="bg-[var(--background-light)] text-[var(--text-dark)]">
+<body class="bg-gray-50 text-gray-800">
     <div class="flex flex-col min-h-screen">
         {{-- =============================================== --}}
         {{-- ヘッダー：これは全てのページで共通 --}}
         {{-- =============================================== --}}
-        <header class="bg-slate-200 relative">
+        <header class="relative text-white">
+            {{-- 背景レイヤー（画像とオーバーレイ） --}}
+            <div class="absolute inset-0">
+                <img src="{{ asset('images/teamhub-header.png') }}" alt="Header Background"
+                    class="w-full h-full object-cover">
+                {{-- オーバーレイ（半透明の黒） --}}
+                {{-- この数値を調整すると濃さが変わります (例: bg-black/30, bg-black/50) --}}
+                <div class="absolute inset-0 bg-black/40"></div>
+            </div>
+
+            {{-- コンテンツレイヤー（ナビゲーションやヒーロー） --}}
+            {{-- z-10 から z-20 に変更（以前のコードとの整合性のため） --}}
             <div class="relative z-20">
 
                 {{-- ナビゲーション --}}

@@ -11,9 +11,9 @@
             <div class="hidden lg:block lg:w-80 lg:flex-shrink-0">
                 <div class="bg-white shadow-lg border border-gray-200 rounded-2xl overflow-hidden sticky top-8">
                     {{-- サイドバーヘッダー --}}
-                    <div class="p-6 bg-slate-100 border-b border-gray-200">
-                        <h2 class="text-xl font-bold text-gray-800 mb-2">🏠 私のコックピット</h2>
-                        <p class="text-sm text-gray-600">
+                    <div class="p-6 bg-green-100 border-b border-gray-200">
+                        {{-- <h2 class="text-xl font-bold text-gray-800 mb-2">🏠 私のコックピット</h2> --}}
+                        <p class="text-gray-800 font-bold">
                             {{ Carbon\Carbon::today()->format('Y年m月d日') }}（{{ Carbon\Carbon::today()->isoFormat('ddd') }}曜日）
                         </p>
                     </div>
@@ -139,7 +139,7 @@
 
                     {{-- 共有事項（ナレッジハブ） --}}
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                        <div class="bg-blue-100 border-b-2 border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                        <div class="bg-green-100 border-b-2 border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                             <h2 class="text-xl lg:text-2xl font-bold text-gray-800 flex items-center">
                                 <span class="mr-3">📢</span>共有事項・お知らせ
                             </h2>
@@ -149,7 +149,7 @@
                                     一覧へ
                                 </button>
                                 <button onclick="location.href='{{ route('knowledges.create') }}'"
-                                    class="px-4 lg:px-6 py-2 lg:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs lg:text-sm transition-all duration-200 shadow-md hover:shadow-lg">
+                                    class="px-4 lg:px-6 py-2 lg:py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xs lg:text-sm transition-all duration-200 shadow-md hover:shadow-lg">
                                     ➕ 新規投稿
                                 </button>
                             </div>
@@ -203,12 +203,12 @@
 
                     {{-- チームカレンダー（スケジュールハブ） --}}
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                        <div class="bg-green-100 border-b-2 border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                        <div class="bg-red-100 border-b-2 border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                             <h2 class="text-xl lg:text-2xl font-bold text-gray-800 flex items-center">
                                 <span class="mr-3">📅</span>今週の予定
                             </h2>
                             <a href="{{ route('events.index') }}"
-                                class="px-4 lg:px-6 py-2 lg:py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xs lg:text-sm transition-all duration-200 shadow-md hover:shadow-lg">
+                                class="px-4 lg:px-6 py-2 lg:py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs lg:text-sm transition-all duration-200 shadow-md hover:shadow-lg">
                                 カレンダー全体を見る
                             </a>
                         </div>
@@ -223,8 +223,8 @@
                                 {{-- レスポンシブ対応グリッドレイアウト --}}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                                     @foreach ($thisWeeksEvents->groupBy(function ($event) {
-        return $event->start_datetime->format('Y-m-d');
-    }) as $date => $eventsOnDate)
+                                        return $event->start_datetime->format('Y-m-d');
+                                    }) as $date => $eventsOnDate)
                                         {{-- 日付ごとのカラム --}}
                                         <div class="flex flex-col">
                                             {{-- 日付ヘッダー --}}
@@ -263,7 +263,7 @@
 
                     {{-- チームの活動状況（デイリーパルス） --}}
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                        <div class="bg-orange-100 border-b-2 border-gray-200 p-4 lg:p-6">
+                        <div class="bg-yellow-100 border-b-2 border-gray-200 p-4 lg:p-6">
                             <h2 class="text-xl lg:text-2xl font-bold text-gray-800 flex items-center">
                                 <span class="mr-3">👥</span>チームのデイリーパルス
                             </h2>
