@@ -1,117 +1,117 @@
 {{-- resources/views/weekly-reports/show.blade.php --}}
 <x-portal-layout>
-    <div class="flex min-h-screen bg-gray-50">
+    {{-- 変更点1: 全体をダッシュボードと同じ lg:flex 構造に変更 --}}
+    <div class="lg:flex lg:gap-8 p-8 bg-gray-50 min-h-screen">
 
         {{-- =============================================== --}}
-        {{-- サイドバー：ナビゲーションエリア（固定スクロール） --}}
+        {{-- サイドバー：ダッシュボードと全く同じ構造に変更 --}}
         {{-- =============================================== --}}
-        <div
-            class="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col fixed overflow-y-auto mt-8 rounded-r-2xl">
-            {{-- サイドバーヘッダー --}}
-            <div class="p-6 bg-slate-100 border-b border-gray-200">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">📊 週報ナビゲーション</h2>
-            </div>
+        <div class="lg:w-80 lg:flex-shrink-0">
+            {{-- 変更点2: サイドバーを sticky top-8 に変更（fixedは削除） --}}
+            <div class="bg-white shadow-lg border border-gray-200 rounded-2xl overflow-hidden sticky top-8">
 
-            {{-- ナビゲーションコンテンツ --}}
-            <div class="flex-1 p-6 space-y-8">
-                {{-- 部署で絞り込み --}}
-                <div>
-                    <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-400">
-                        🏢 部署で絞り込み
-                    </label>
-                    <select id="division-selector"
-                        class="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-200 bg-white text-gray-800 font-medium">
-                        <option value="">すべての部署</option>
-                        @foreach ($divisions as $division)
-                            <option value="{{ $division->id }}"
-                                {{ $user->division_id == $division->id ? 'selected' : '' }}>
-                                {{ $division->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                {{-- サイドバーヘッダー（ここは固定される） --}}
+                <div class="p-6 bg-slate-100 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800">📊 週報ナビゲーション</h2>
                 </div>
 
-                {{-- メンバー選択 --}}
-                <div>
-                    <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-green-400">
-                        👤 メンバー選択
-                    </label>
-                    <select id="user-selector"
-                        class="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-200 bg-white text-gray-800 font-medium">
-                        @foreach ($users as $member)
-                            <option value="{{ $member->id }}" data-division-id="{{ $member->division_id }}"
-                                {{ $user->id == $member->id ? 'selected' : '' }}>
-                                {{ $member->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                {{-- ナビゲーションコンテンツ（ここがスクロールするエリア） --}}
+                <div class="max-h-[calc(100vh-10rem)] overflow-y-auto sidebar-scroll">
+                    <div class="p-6 space-y-8">
+                        {{-- 部署で絞り込み --}}
+                        <div>
+                            <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-400">
+                                🏢 部署で絞り込み
+                            </label>
+                            <select id="division-selector"
+                                class="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-200 bg-white text-gray-800 font-medium">
+                                <option value="">すべての部署</option>
+                                @foreach ($divisions as $division)
+                                    <option value="{{ $division->id }}"
+                                        {{ $user->division_id == $division->id ? 'selected' : '' }}>
+                                        {{ $division->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                {{-- 週のナビゲーション --}}
-                <div>
-                    <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-purple-400">
-                        📅 週の切り替え
-                    </label>
-                    <div class="bg-gray-50 p-4 rounded-xl border-2 border-gray-300">
-                        @php
-                            // 前の週の年と週番号を計算
-                            $prevWeek = \Carbon\Carbon::createFromDate($year, 1, 1)
-                                ->setISODate($year, $week_number)
-                                ->subWeek();
-                            // 次の週の年と週番号を計算
-                            $nextWeek = \Carbon\Carbon::createFromDate($year, 1, 1)
-                                ->setISODate($year, $week_number)
-                                ->addWeek();
-                        @endphp
+                        {{-- メンバー選択 --}}
+                        <div>
+                            <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-green-400">
+                                👤 メンバー選択
+                            </label>
+                            <select id="user-selector"
+                                class="w-full px-4 py-3 text-base border-2 border-gray-300 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-200 bg-white text-gray-800 font-medium">
+                                @foreach ($users as $member)
+                                    <option value="{{ $member->id }}" data-division-id="{{ $member->division_id }}"
+                                        {{ $user->id == $member->id ? 'selected' : '' }}>
+                                        {{ $member->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                        {{-- 現在の週表示 --}}
-                        <div class="text-center mb-4">
-                            <div class="text-sm font-medium text-gray-600 mb-1">現在表示中の週</div>
-                            <div
-                                class="text-lg font-bold text-gray-800 bg-white px-4 py-2 rounded-lg border border-gray-300">
-                                {{ \Carbon\Carbon::parse($startOfWeek)->format('Y/m/d') }} ～
-                                {{ \Carbon\Carbon::parse($endOfWeek)->format('Y/m/d') }}
+                        {{-- 週のナビゲーション --}}
+                        <div>
+                            <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-purple-400">
+                                📅 週の切り替え
+                            </label>
+                            <div class="bg-gray-50 p-4 rounded-xl border-2 border-gray-300">
+                                @php
+                                    $prevWeek = \Carbon\Carbon::createFromDate($year, 1, 1)
+                                        ->setISODate($year, $week_number)
+                                        ->subWeek();
+                                    $nextWeek = \Carbon\Carbon::createFromDate($year, 1, 1)
+                                        ->setISODate($year, $week_number)
+                                        ->addWeek();
+                                @endphp
+                                <div class="text-center mb-4">
+                                    <div class="text-sm font-medium text-gray-600 mb-1">現在表示中の週</div>
+                                    <div
+                                        class="text-lg font-bold text-gray-800 bg-white px-4 py-2 rounded-lg border border-gray-300">
+                                        {{ \Carbon\Carbon::parse($startOfWeek)->format('Y/m/d') }} ～
+                                        {{ \Carbon\Carbon::parse($endOfWeek)->format('Y/m/d') }}
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <a href="{{ route('weekly-reports.show', ['user' => $user, 'year' => $prevWeek->year, 'week_number' => $prevWeek->weekOfYear]) }}"
+                                        class="flex-1 px-4 py-3 text-center text-sm font-bold bg-white hover:bg-blue-100 border-2 border-gray-300 hover:border-blue-400 rounded-lg transition-all duration-200 text-gray-800">
+                                        ← 前の週
+                                    </a>
+                                    <a href="{{ route('weekly-reports.show', ['user' => $user, 'year' => $nextWeek->year, 'week_number' => $nextWeek->weekOfYear]) }}"
+                                        class="flex-1 px-4 py-3 text-center text-sm font-bold bg-white hover:bg-blue-100 border-2 border-gray-300 hover:border-blue-400 rounded-lg transition-all duration-200 text-gray-800">
+                                        次の週 →
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
-                        {{-- 前週・次週ボタン --}}
-                        <div class="flex gap-2">
-                            <a href="{{ route('weekly-reports.show', ['user' => $user, 'year' => $prevWeek->year, 'week_number' => $prevWeek->weekOfYear]) }}"
-                                class="flex-1 px-4 py-3 text-center text-sm font-bold bg-white hover:bg-blue-100 border-2 border-gray-300 hover:border-blue-400 rounded-lg transition-all duration-200 text-gray-800">
-                                ← 前の週
-                            </a>
-                            <a href="{{ route('weekly-reports.show', ['user' => $user, 'year' => $nextWeek->year, 'week_number' => $nextWeek->weekOfYear]) }}"
-                                class="flex-1 px-4 py-3 text-center text-sm font-bold bg-white hover:bg-blue-100 border-2 border-gray-300 hover:border-blue-400 rounded-lg transition-all duration-200 text-gray-800">
-                                次の週 →
-                            </a>
+                        {{-- クイックアクション --}}
+                        <div>
+                            <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-orange-400">
+                                ⚡ クイックアクション
+                            </label>
+                            <div class="space-y-3">
+                                <a href="{{ route('weekly-reports.show', ['user' => Auth::user(), 'year' => now()->year, 'week_number' => now()->weekOfYear]) }}"
+                                    class="block w-full px-4 py-3 text-center text-sm font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                                    🏠 自分の今週の週報
+                                </a>
+                                <a href="{{ route('daily-reports.edit', ['user' => Auth::user(), 'date' => Carbon\Carbon::today()->format('Y-m-d')]) }}"
+                                    class="block w-full px-4 py-3 text-center text-sm font-bold {{ $todaysReportExists ? 'bg-blue-500 hover:bg-blue-600' : 'bg-yellow-400 hover:bg-yellow-500' }} {{ $todaysReportExists ? 'text-white' : 'text-gray-800' }} rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                                    {{ $todaysReportExists ? '✏️ 今日の日報を編集' : '📝 今日の日報を作成' }}
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                {{-- クイックアクション --}}
-                <div>
-                    <label class="block text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-orange-400">
-                        ⚡ クイックアクション
-                    </label>
-                    <div class="space-y-3">
-                        <a href="{{ route('weekly-reports.show', ['user' => Auth::user(), 'year' => now()->year, 'week_number' => now()->weekOfYear]) }}"
-                            class="block w-full px-4 py-3 text-center text-sm font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
-                            🏠 自分の今週の週報
-                        </a>
-                        {{-- 日報関連 --}}
-                        <a href="{{ route('daily-reports.edit', ['user' => Auth::user(), 'date' => Carbon\Carbon::today()->format('Y-m-d')]) }}"
-                            class="block w-full px-4 py-3 text-center text-sm font-bold {{ $todaysReportExists ? 'bg-blue-500 hover:bg-blue-600' : 'bg-yellow-400 hover:bg-yellow-500' }} {{ $todaysReportExists ? 'text-white' : 'text-gray-800' }} rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
-                            {{ $todaysReportExists ? '✏️ 今日の日報を編集' : '📝 今日の日報を作成' }}
-                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
         {{-- =============================================== --}}
-        {{-- メインコンテンツエリア（カードで囲む） --}}
+        {{-- メインコンテンツエリア --}}
         {{-- =============================================== --}}
-        <div class="flex-1 ml-80 overflow-auto p-8">
+        {{-- 変更点3: メインコンテンツから ml-80 を削除し、flex-1 のみにする --}}
+        <div class="flex-1">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                 {{-- メインヘッダー --}}
                 <div class="bg-slate-100 border-b-2 border-gray-200 p-8">
@@ -162,7 +162,9 @@
                     {{-- 日報リスト（月〜金） --}}
                     {{-- =============================================== --}}
                     <div class="space-y-6">
-                        <h2 class="text-3xl font-bold text-gray-800 pb-3 border-b-3 border-blue-400 mb-8">📋 日報一覧</h2>
+                        <h2 class="text-3xl font-bold text-gray-800 pb-3 border-b-3 border-blue-400 mb-8">📋
+                            日報一覧
+                        </h2>
 
                         @php
                             // コントローラーから渡された、月曜日のCarbonオブジェクトをコピー
@@ -268,6 +270,22 @@
             </div>
         </div>
     </div>
+    {{-- スクロールバーを非表示にするためのCSS --}}
+    @push('styles')
+        <style>
+            /* サイドバー内のスクロールバーを完全に非表示 */
+            .sidebar-scroll::-webkit-scrollbar {
+                display: none !important;
+            }
+
+            .sidebar-scroll {
+                -ms-overflow-style: none !important;
+                /* IE and Edge */
+                scrollbar-width: none !important;
+                /* Firefox */
+            }
+        </style>
+    @endpush
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const divisionSelector = document.getElementById('division-selector');
