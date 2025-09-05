@@ -1,0 +1,64 @@
+<x-portal-layout :showHero="false">
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            ユーザー管理
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+            {{-- ヘッダー：タイトルと新規登録ボタン --}}
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
+                    ユーザー一覧
+                </h1>
+                <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold  text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">
+                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    新規ユーザー登録
+                </a>
+            </div>
+
+            {{-- ユーザーカードグリッド --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @forelse ($users as $user)
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                        <a href="{{ route('admin.users.show', $user) }}" class="block p-6">
+                            <div class="flex items-center space-x-4 mb-4">
+                                <img class="h-12 w-12 rounded-full object-cover" src="https://i.pravatar.cc/150?u={{ $user->email }}" alt="User Avatar">
+                                <div class="min-w-0">
+                                    <p class="text-lg font-bold text-gray-900 truncate">{{ $user->name }}</p>
+                                    <p class="text-sm text-gray-500 truncate">{{ $user->division->name ?? '未設定' }}</p>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-600 space-y-2">
+                                <div class="flex items-center">
+                                    <svg class="h-4 w-4 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                    <span class="truncate">{{ $user->email }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="h-4 w-4 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg>
+                                    <span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full {{ $user->is_admin ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+                                        {{ $user->is_admin ? '管理者' : '一般ユーザー' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @empty
+                    <div class="md:col-span-2 lg:col-span-3 text-center py-12">
+                        <p class="text-gray-500">ユーザーはまだ登録されていません。</p>
+                    </div>
+                @endforelse
+            </div>
+
+            {{-- ページネーション --}}
+            <div class="mt-8">
+                {{ $users->links() }}
+            </div>
+
+        </div>
+    </div>
+</x-portal-layout>

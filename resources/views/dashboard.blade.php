@@ -24,10 +24,12 @@
 
                             {{-- 今日のToDo --}}
                             <div>
-                                <label class="block text-lg font-bold text-slate-800 mb-3 pb-2 border-b-2 border-gray-300">
+                                <label
+                                    class="block text-lg font-bold text-slate-800 mb-3 pb-2 border-b-2 border-gray-300">
                                     ✅ 今日やること
                                 </label>
-                                <div class="bg-slate-100 p-4 rounded-xl border border-gray-300 text-sm text-slate-700 min-h-[80px]">
+                                <div
+                                    class="bg-slate-100 p-4 rounded-xl border border-gray-300 text-sm text-slate-700 min-h-[80px]">
                                     @if ($todaysPlan)
                                         {!! nl2br(e($todaysPlan)) !!}
                                     @else
@@ -38,7 +40,8 @@
 
                             {{-- 今日の進捗状況 --}}
                             <div>
-                                <label class="block text-lg font-bold text-slate-800 mb-3 pb-2 border-b-2 border-gray-300">
+                                <label
+                                    class="block text-lg font-bold text-slate-800 mb-3 pb-2 border-b-2 border-gray-300">
                                     📊 今日の進捗
                                 </label>
                                 <div class="bg-slate-100 p-4 rounded-xl border border-gray-300">
@@ -64,10 +67,12 @@
 
                             {{-- 今週の目標 --}}
                             <div>
-                                <label class="block text-lg font-bold text-slate-800 mb-3 pb-2 border-b-2 border-gray-300">
+                                <label
+                                    class="block text-lg font-bold text-slate-800 mb-3 pb-2 border-b-2 border-gray-300">
                                     🎯 今週の羅針盤
                                 </label>
-                                <div class="bg-slate-100 p-4 rounded-xl border border-gray-300 text-sm text-slate-700 min-h-[60px]">
+                                <div
+                                    class="bg-slate-100 p-4 rounded-xl border border-gray-300 text-sm text-slate-700 min-h-[60px]">
                                     @if ($thisWeeksGoal && $thisWeeksGoal->goal_this_week)
                                         {!! nl2br(e($thisWeeksGoal->goal_this_week)) !!}
                                     @else
@@ -78,7 +83,8 @@
 
                             {{-- クイックアクション --}}
                             <div>
-                                <label class="block text-lg font-bold text-slate-800 mb-3 pb-2 border-b-2 border-gray-300">
+                                <label
+                                    class="block text-lg font-bold text-slate-800 mb-3 pb-2 border-b-2 border-gray-300">
                                     ⚡ クイックアクション
                                 </label>
                                 <div class="space-y-3">
@@ -139,7 +145,8 @@
 
                     {{-- 共有事項（ナレッジハブ） --}}
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                        <div class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                        <div
+                            class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                             <h2 class="text-xl lg:text-2xl font-bold text-slate-800 flex items-center">
                                 <span class="text-green-600 mr-3">📢</span>共有事項・お知らせ
                             </h2>
@@ -203,7 +210,8 @@
 
                     {{-- チームカレンダー（スケジュールハブ） --}}
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                        <div class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                        <div
+                            class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                             <h2 class="text-xl lg:text-2xl font-bold text-slate-800 flex items-center">
                                 <span class="text-blue-600 mr-3">📅</span>今週の予定
                             </h2>
@@ -223,13 +231,14 @@
                                 {{-- レスポンシブ対応グリッドレイアウト --}}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                                     @foreach ($thisWeeksEvents->groupBy(function ($event) {
-                                        return $event->start_datetime->format('Y-m-d');
-                                    }) as $date => $eventsOnDate)
+        return $event->start_datetime->format('Y-m-d');
+    }) as $date => $eventsOnDate)
                                         {{-- 日付ごとのカラム --}}
                                         <div class="flex flex-col">
                                             {{-- 日付ヘッダー --}}
                                             <div class="mb-2">
-                                                <span class="font-bold text-base lg:text-lg text-slate-700 bg-gray-100 px-3 py-1 rounded-lg">
+                                                <span
+                                                    class="font-bold text-base lg:text-lg text-slate-700 bg-gray-100 px-3 py-1 rounded-lg">
                                                     {{ \Carbon\Carbon::parse($date)->isoFormat('M月D日 (ddd)') }}
                                                 </span>
                                             </div>
@@ -240,8 +249,10 @@
                                                     <a href="{{ route('events.show', $event) }}"
                                                         class="block p-3 rounded-lg hover:bg-slate-100 border-l-4"
                                                         style="border-color: {{ $event->color }};">
-                                                        <p class="font-bold text-sm text-slate-800">{{ $event->title }}</p>
-                                                        <div class="text-xs text-gray-500 flex justify-between items-center mt-1">
+                                                        <p class="font-bold text-sm text-slate-800">{{ $event->title }}
+                                                        </p>
+                                                        <div
+                                                            class="text-xs text-gray-500 flex justify-between items-center mt-1">
                                                             <span>
                                                                 @if ($event->is_all_day)
                                                                     終日
@@ -265,17 +276,37 @@
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                         <div class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6">
                             <h2 class="text-xl lg:text-2xl font-bold text-slate-800 flex items-center">
-                                <span class="text-amber-600 mr-3">👥</span>チームのデイリーパルス
+                                <span class="text-amber-600 mr-3">👥</span>チームの活動状況
                             </h2>
                             <p class="text-sm text-gray-600 mt-2">同じ部署のメンバーの今日の活動状況</p>
                         </div>
 
-                        <div class="p-4 lg:p-6">
-                            <div class="text-center py-8 lg:py-12 text-gray-500">
-                                <span class="text-4xl lg:text-6xl block mb-4">💓</span>
-                                <p class="text-base lg:text-lg font-medium">チーム活動状況を準備中</p>
-                                <p class="text-sm mt-2">部署メンバーの日報提出状況をリアルタイム表示予定です</p>
-                            </div>
+                        <div class="divide-y divide-gray-100">
+                            @forelse ($teamMembers as $member)
+                                <div class="p-4 flex justify-between items-center">
+                                    {{-- メンバー名 --}}
+                                    <span class="font-bold text-gray-800">{{ $member->name }}</span>
+
+                                    {{-- 日報ステータス --}}
+                                    @if (isset($dailyReportStatuses[$member->id]))
+                                        {{-- [提出済み] --}}
+                                        <span
+                                            class="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">
+                                            ✅ 提出済み
+                                        </span>
+                                    @else
+                                        {{-- [未提出] --}}
+                                        <span
+                                            class="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full">
+                                            📝 未提出
+                                        </span>
+                                    @endif
+                                </div>
+                            @empty
+                                <div class="p-8 text-center text-gray-500">
+                                    <p>同じ部署に、他のメンバーがいません。</p>
+                                </div>
+                            @endforelse
                         </div>
                     </div>
 
@@ -292,9 +323,12 @@
             }
 
             .sidebar-scroll {
-                -ms-overflow-style: none !important;  /* IE and Edge */
-                scrollbar-width: none !important;     /* Firefox */
-                scroll-behavior: smooth;              /* スムーズスクロール */
+                -ms-overflow-style: none !important;
+                /* IE and Edge */
+                scrollbar-width: none !important;
+                /* Firefox */
+                scroll-behavior: smooth;
+                /* スムーズスクロール */
             }
         </style>
     @endpush
