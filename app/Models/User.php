@@ -80,6 +80,16 @@ class User extends Authenticatable
         return $this->hasMany(Event::class);
     }
 
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function createdProjects(): HasMany
+    {
+        return $this->hasMany(Project::class, 'created_by');
+    }
+
 
     /**
      * アバター画像のURLを取得するため
