@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 
 class User extends Authenticatable
@@ -25,7 +26,8 @@ class User extends Authenticatable
         'email',
         'password',
         'is_admin',
-        'division_id'
+        'division_id',
+        'avatar_path',
     ];
 
     /**
@@ -77,4 +79,21 @@ class User extends Authenticatable
         return $this->hasMany(Event::class);
     }
 
+
+    /**
+     * アバター画像のURLを取得するため
+     *
+     * @return string
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        // もし、avatar_pathカラムに値があれば…
+        if ($this->avatar_path) {
+            // storageへのリンクを使って、正しいURLを返す
+            return Storage::url($this->avatar_path);
+        }
+
+        // なければ、public/images/default-avatar.png のデフォルト画像のパスを返す
+        return asset('images/default-avatar.png');
+    }
 }

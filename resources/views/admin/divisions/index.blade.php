@@ -31,7 +31,7 @@
                         <a href="{{ route('admin.divisions.show', $division) }}" class="block p-6">
                             <div class="flex items-center space-x-4 mb-4">
                                 <img class="h-12 w-12 rounded-full object-cover"
-                                    src="https://i.pravatar.cc/150?u=division{{ $division->id }}" alt="Division Avatar">
+                                    src="{{ $division->logo_url }}" alt="Division Logo">
                                 <div class="min-w-0">
                                     <p class="text-lg font-bold text-gray-900 truncate">{{ $division->name }}</p>
                                     {{-- [変更] 部署に所属するユーザーの人数 --}}

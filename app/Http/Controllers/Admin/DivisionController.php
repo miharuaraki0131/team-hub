@@ -7,7 +7,8 @@ use App\Http\Requests\Admin\StoreDivisionRequest;
 use App\Http\Requests\Admin\UpdateDivisionRequest;
 use App\Models\Division;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // [重要] データベーストランザクションのために、これをインポートします
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class DivisionController extends Controller
 {
@@ -53,6 +54,17 @@ class DivisionController extends Controller
                     }
                 }
             }
+
+            $avatarPath = null;
+            // もし、リクエストに'logo'という名前のファイルが含まれていたら…
+            if ($request->hasFile('logo')) {
+                // ファイルを 'public' ディスクの 'logos' フォルダに、ユニークな名前で保存し、そのパスを取得
+                $avatarPath = $request->file('logo')->store('logos', 'public');
+            }
+            // 4. アバター画像のパスが存在する場合、部署のアバター属性を更新
+            if ($avatarPath) {
+                $division->update(['logo' => $avatarPath]);
+            }
         });
 
         return redirect()->route('admin.divisions.index')->with('success', '新しい部署を登録しました。');
@@ -89,7 +101,6 @@ class DivisionController extends Controller
             $division->update(['name' => $validated['name']]);
 
             // 2. この部署に紐づく、既存の通知先を、一度「全て」削除します。
-            //    (これが、最もシンプルで確実な更新方法です)
             $division->notificationDestinations()->delete();
 
             // 3. そして、フォームから新しく送信されたメールアドレスを、改めて登録し直します。
@@ -100,6 +111,15 @@ class DivisionController extends Controller
                     }
                 }
             }
+
+            // 4. ロゴ画像の更新処理
+            if ($request->hasFile('logo')) {
+                if ($division->logo_path) {
+                    Storage::disk('public')->delete($division->logo);
+                }
+                $validated['logo_path'] = $request->file('logo')->store('logos', 'public');
+            }
+            $division->update($validated);
         });
 
         return redirect()->route('admin.divisions.index')->with('success', '部署情報を更新しました。');

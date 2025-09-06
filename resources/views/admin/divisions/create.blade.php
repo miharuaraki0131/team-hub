@@ -22,6 +22,18 @@
                     </div>
                 </div>
 
+                {{-- 部署画像 --}}
+                <div>
+                    <label for="logo" class="block text-sm font-medium text-gray-700">プロフィール画像</label>
+                    <div class="mt-1">
+                        <input type="file" name="logo" id="logo"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                    </div>
+                    @error('logo')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 {{-- 通知先 --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700">通知先メールアドレス</label>

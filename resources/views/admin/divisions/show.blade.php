@@ -13,7 +13,11 @@
 
                 {{-- 部署名 --}}
                 <div class="p-6 md:p-8">
-                    <h1 class="text-2xl font-bold text-gray-900">{{ $division->name }}</h1>
+                    <div class="flex items-center space-x-5">
+                        <img class="h-20 w-20 rounded-full object-cover" src="{{ $division->logo_url }}"
+                            alt="Division Logo">
+                        <h1 class="text-2xl font-bold text-gray-900">{{ $division->name }}</h1>
+                    </div>
                 </div>
 
                 {{-- 詳細情報 --}}

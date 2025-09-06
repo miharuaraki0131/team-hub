@@ -25,7 +25,9 @@ class StoreDivisionRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', 'unique:divisions,name'],
-            'notification_destination_id' => ['nullable', 'integer', 'exists:notification_destinations,id'],
+            'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'emails' => ['nullable', 'array'],
+            'emails.*' => ['nullable', 'email', 'max:255'],
         ];
     }
 }

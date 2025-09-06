@@ -27,7 +27,7 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
                         <a href="{{ route('admin.users.show', $user) }}" class="block p-6">
                             <div class="flex items-center space-x-4 mb-4">
-                                <img class="h-12 w-12 rounded-full object-cover" src="https://i.pravatar.cc/150?u={{ $user->email }}" alt="User Avatar">
+                               <img class="h-12 w-12 rounded-full object-cover" src="{{ $user->avatar_url }}" alt="User Avatar">
                                 <div class="min-w-0">
                                     <p class="text-lg font-bold text-gray-900 truncate">{{ $user->name }}</p>
                                     <p class="text-sm text-gray-500 truncate">{{ $user->division->name ?? '未設定' }}</p>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Division extends Model
 {
@@ -12,7 +13,7 @@ class Division extends Model
 
     protected $fillable = [
         'name',
-        'notification_destination_id'
+        'logo_path',
     ];
 
 
@@ -27,5 +28,14 @@ class Division extends Model
     public function notificationDestinations(): HasMany
     {
         return $this->hasMany(NotificationDestination::class);
+    }
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        if ($this->logo_path) {
+            return Storage::url($this->logo_path);
+        }
+
+        return asset('images/team-hub-logo.png');
     }
 }

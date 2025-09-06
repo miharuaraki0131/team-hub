@@ -15,7 +15,7 @@
                 <div class="p-6 md:p-8">
                     <div class="flex items-center space-x-5">
                         <img class="h-20 w-20 rounded-full object-cover mr-4"
-                            src="https://i.pravatar.cc/150?u={{ $user->email }}" alt="User Avatar">
+                            src="{{ $user->avatar_url }}" alt="User Avatar">
                         <div>
                             <h1 class="text-2xl font-bold text-gray-900">{{ $user->name }}</h1>
                             <p class="text-md text-gray-600">{{ $user->division->name ?? '未設定' }}</p>

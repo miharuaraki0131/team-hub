@@ -9,6 +9,7 @@ use App\Models\Division;
 use App\Http\Requests\Admin\StoreUserRequest;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\UpdateUserRequest;
+use Illuminate\Support\Facades\Storage;
 
 
 class UserController extends Controller
@@ -40,6 +41,13 @@ class UserController extends Controller
     {
         $validated = $request->validated();
 
+        $avatarPath = null;
+        // もし、リクエストに'avatar'という名前のファイルが含まれていたら…
+        if ($request->hasFile('avatar')) {
+            // ファイルを 'public' ディスクの 'avatars' フォルダに、ユニークな名前で保存し、そのパスを取得
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
+
         // Userモデルを使って、新しいユーザーを作成
         User::create([
             'name' => $validated['name'],
@@ -47,6 +55,7 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']), // ★パスワードはHash化して保存
             'division_id' => $validated['division_id'] ?? null,
             'is_admin' => $request->boolean('is_admin'), // チェックボックス対応
+            'avatar_path' => $avatarPath, // 画像のパスを保存 (もしあれば)
         ]);
 
         // 登録後は、ユーザー一覧ページにリダイレクト
@@ -78,18 +87,22 @@ class UserController extends Controller
     {
         $validated = $request->validated();
 
-        // パスワードが入力されている場合のみ、ハッシュ化して更新データに含める
         if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
-            // パスワードが空の場合は、更新データから除外する
             unset($validated['password']);
         }
 
-        // is_adminの値を設定（チェックボックス対応 空だとデータが送られてこないので）
         $validated['is_admin'] = $request->boolean('is_admin');
 
-        // ユーザー情報を更新
+
+        // もし、新しいアバターファイルがアップロードされていたら古いアバターを削除し、新しいアバターを保存する
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar_path) {
+                Storage::disk('public')->delete($user->avatar_path);
+            }
+            $validated['avatar_path'] = $request->file('avatar')->store('avatars', 'public');
+        }
         $user->update($validated);
 
         return redirect()->route('admin.users.index')->with('success', 'ユーザー情報を更新しました。');

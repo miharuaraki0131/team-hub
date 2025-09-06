@@ -29,7 +29,7 @@ class UpdateUserRequest extends FormRequest
             'password' => ['nullable', 'confirmed', Password::defaults()],
             'division_id' => ['nullable', 'integer', 'exists:divisions,id'],
             'is_admin' => ['nullable', 'boolean'],
-            'image' => ['nullable', 'image', 'max:2048'], // 画像アップロードを実装する場合
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // 画像アップロードを実装する場合
         ];
     }
 }
