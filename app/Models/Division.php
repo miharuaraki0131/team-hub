@@ -39,4 +39,20 @@ class Division extends Model
 
         return asset('images/team-hub-logo.png');
     }
+
+    /**
+     * [追加] モデルのブートメソッド
+     * モデルが初期化される際に、このメソッドが一度だけ呼ばれます。
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // [追加] "deleting" (削除処理が開始される直前) のイベントを監視します。
+        // 論理削除の場合も、このイベントは発火します。
+        static::deleting(function ($division) {
+            // この部署に関連する全ての通知先を、物理的に削除します。
+            $division->notificationDestinations()->delete();
+        });
+    }
 }
