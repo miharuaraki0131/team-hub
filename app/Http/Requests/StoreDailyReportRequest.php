@@ -24,7 +24,6 @@ class StoreDailyReportRequest extends FormRequest
     public function rules(): array
     {
        return [
-        'report_date' => ['required', 'date'], // 日付は必須のまま
         'summary_today' => ['nullable', 'string', 'max:1000'], // 'required' を 'nullable' に変更
         'discrepancy' => ['nullable', 'string', 'max:1000'],   // 'required' を 'nullable' に変更
         'summary_tomorrow' => ['nullable', 'string', 'max:1000'], // 'required' を 'nullable' に変更
