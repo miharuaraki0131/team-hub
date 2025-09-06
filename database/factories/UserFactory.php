@@ -23,4 +23,16 @@ class UserFactory extends Factory
             'is_admin' => false, // [追加] デフォルトは非管理者
         ];
     }
+
+    /**
+     * [追加] メールアドレスが未認証の状態を示す
+     *
+     * @return static
+     */
+    public function unverified(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'email_verified_at' => null,
+        ]);
+    }
 }
