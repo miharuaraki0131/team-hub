@@ -44,6 +44,9 @@
                             <x-dropdown-link :href="route('admin.users.index')">
                                 ユーザー管理
                             </x-dropdown-link>
+                            <x-dropdown-link :href="route('admin.divisions.index')">
+                                部署管理
+                            </x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
                 </div>

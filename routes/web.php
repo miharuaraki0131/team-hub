@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KnowledgeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\DivisionController;
 
 
 
@@ -61,6 +62,7 @@ Route::middleware('auth')->group(function () {
 
         // ユーザー管理のCRUDルートを、一行で定義
         Route::resource('users', UserController::class);
+        Route::resource('divisions', DivisionController::class);
 
     });
 });
