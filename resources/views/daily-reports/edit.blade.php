@@ -8,7 +8,7 @@
                 <input type="hidden" name="report_date" value="{{ $dailyReport->report_date->format('Y-m-d') }}">
 
                 {{-- ヘッダー（見やすく、分かりやすく） --}}
-                <div class="p-8 bg-blue-100 border-b-2 border-gray-200">
+                <div class="p-8 bg-slate-100 border-b-2 border-gray-200">
                     <div class="flex flex-col sm:flex-row justify-between items-center">
                         <div>
                             <h1 class="text-4xl font-bold text-gray-800 mb-2">📋 日報</h1>

@@ -71,6 +71,23 @@ class DashboardController extends Controller
             ->orderBy('start_datetime')
             ->get();
 
+
+
+        //チームの日報提出状況
+        // 1. ログインユーザーが所属する部署の、他のメンバーを取得
+        $teamMembers = User::where('division_id', $user->division_id)
+            ->where('id', '!=', $user->id) // 自分自身は除外する
+            ->orderBy('name')
+            ->get();
+
+        // 2. チームメンバーの「今日の日報の提出状況」をチェックする
+        //    pluck()とkeyBy()を使い、メンバーIDをキーにした日報の有無の連想配列を作る
+        $dailyReportStatuses = DailyReport::whereIn('user_id', $teamMembers->pluck('id'))
+            ->where('report_date', $today->format('Y-m-d'))
+            ->get()
+            ->keyBy('user_id');
+
+
         return view('dashboard', [
             'user' => $user,
             'todaysPlan' => $todaysPlan,
@@ -79,6 +96,8 @@ class DashboardController extends Controller
             'latestKnowledges' => $latestKnowledges,
             'teamMembers' => $teamMembers, // チーム情報を追加
             'thisWeeksEvents' => $thisWeeksEvents, // 今週の予定を追加
+            'teamMembers' => $teamMembers, // チームメンバー情報を追加
+            'dailyReportStatuses' => $dailyReportStatuses, // 日報提出状況を追加
         ]);
     }
 }

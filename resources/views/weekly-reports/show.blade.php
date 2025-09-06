@@ -99,7 +99,7 @@
                             🏠 自分の今週の週報
                         </a>
                         {{-- 日報関連 --}}
-                        <a href="{{ route('daily-reports.edit', ['user' => $user, 'date' => Carbon\Carbon::today()->format('Y-m-d')]) }}"
+                        <a href="{{ route('daily-reports.edit', ['user' => Auth::user(), 'date' => Carbon\Carbon::today()->format('Y-m-d')]) }}"
                             class="block w-full px-4 py-3 text-center text-sm font-bold {{ $todaysReportExists ? 'bg-blue-500 hover:bg-blue-600' : 'bg-yellow-400 hover:bg-yellow-500' }} {{ $todaysReportExists ? 'text-white' : 'text-gray-800' }} rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
                             {{ $todaysReportExists ? '✏️ 今日の日報を編集' : '📝 今日の日報を作成' }}
                         </a>
@@ -133,7 +133,7 @@
                     {{-- =============================================== --}}
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                         {{-- 今週の目標・総括 --}}
-                        <div class="bg-blue-50 p-8 rounded-2xl border-2 border-slate-300 shadow-md">
+                        <div class="bg-gray-50 p-8 rounded-2xl border-2 border-slate-300 shadow-md">
                             <div class="flex justify-between items-center mb-6">
                                 <h2 class="text-2xl font-bold text-gray-800">🎯 今週の目標・総括</h2>
                                 @if (Auth::id() === $user->id)
@@ -149,7 +149,7 @@
                             </div>
                         </div>
                         {{-- 来週の予定 --}}
-                        <div class="bg-green-50 p-8 rounded-2xl border-2 border-slate-300 shadow-md">
+                        <div class="bg-gray-50 p-8 rounded-2xl border-2 border-slate-300 shadow-md">
                             <h2 class="text-2xl font-bold text-gray-800 mb-6">📅 来週の予定</h2>
                             <div
                                 class="text-lg leading-relaxed text-gray-800 bg-white p-6 rounded-xl border-2 border-slate-300 font-medium min-h-32">
