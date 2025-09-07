@@ -10,6 +10,9 @@ use App\Http\Controllers\KnowledgeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DivisionController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
+
 
 
 
@@ -58,9 +61,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/events/json', [EventController::class, 'getEvents'])->name('events.json');
     Route::resource('events', EventController::class);
 
-    Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    //WBS関連
+    Route::resource('projects', ProjectController::class);
+    Route::resource('tasks', TaskController::class);
 
-        // ユーザー管理のCRUDルートを、一行で定義
+    // 管理者用ルート (Admin Routes)
+    Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
         Route::resource('users', UserController::class);
         Route::resource('divisions', DivisionController::class);
 
