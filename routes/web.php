@@ -65,11 +65,41 @@ Route::middleware('auth')->group(function () {
     Route::resource('projects', ProjectController::class);
     Route::resource('tasks', TaskController::class);
 
-    // 管理者用ルート (Admin Routes)
-    Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-        Route::resource('users', UserController::class);
-        Route::resource('divisions', DivisionController::class);
+    // タスク管理のルート（プロジェクトのネストリソース）
+    Route::prefix('projects/{project}')->group(function () {
 
+        // WBS/ガントチャート表示
+        Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+
+        // タスクのCRUD操作（JSON API）
+        Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+        Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
+        Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+        Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+
+        // タスクの並び順一括更新
+        Route::put('/tasks-positions', [TaskController::class, 'updatePositions'])->name('tasks.updatePositions');
+
+        // プロジェクト進捗サマリー取得
+        Route::get('/summary', [TaskController::class, 'getProjectSummary'])->name('tasks.summary');
+    });
+
+
+    // API用のルート（必要に応じて）
+    Route::prefix('api')->middleware(['auth'])->group(function () {
+
+        // ガントチャート用のJSONデータ取得
+        Route::get('/projects/{project}/gantt-data', [TaskController::class, 'getGanttData'])->name('api.gantt.data');
+
+        // タスクの一括更新（ガントチャートでのドラッグ&ドロップ対応）
+        Route::put('/projects/{project}/tasks/bulk-update', [TaskController::class, 'bulkUpdate'])->name('api.tasks.bulkUpdate');
+
+
+        // 管理者用ルート (Admin Routes)
+        Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+            Route::resource('users', UserController::class);
+            Route::resource('divisions', DivisionController::class);
+        });
     });
 });
 
