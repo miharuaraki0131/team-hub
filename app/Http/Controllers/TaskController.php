@@ -215,35 +215,41 @@ class TaskController extends Controller
         return response()->json($summary);
     }
 
-    /**
-     * ガントチャート用のJSONデータを取得
-     */
     public function getGanttData(Project $project)
     {
-        $tasks = Task::where('project_id', $project->id)
-            ->with(['user', 'parent', 'children'])
-            ->orderBy('position')
-            ->get();
+        // [修正] parent_id が null のタスクだけでなく、プロジェクトの全タスクを取得する
+        $tasks = $project->tasks()->with('user')->orderBy('position')->get();
 
-        $ganttData = $tasks->map(function($task) {
+        $ganttTasks = $tasks->map(function ($task) {
+
+            // [修正] 期間(duration)を計算する。日付がなければ1日とする。
+            $duration = 1;
+            if ($task->planned_start_date && $task->planned_end_date) {
+                // diffInDaysは純粋な差なので、+1して日数を数える
+                $duration = $task->planned_start_date->diffInDays($task->planned_end_date) + 1;
+            }
+
             return [
-                'id' => $task->id,
-                'text' => $task->title,
+                'id'       => $task->id,
+                'text'     => $task->title, // [修正] WBS番号は除外し、純粋なタイトルのみにする
                 'start_date' => $task->planned_start_date?->format('Y-m-d'),
-                'end_date' => $task->planned_end_date?->format('Y-m-d'),
-                'duration' => $task->planned_duration ?? 1,
-                'progress' => $task->progress_percentage / 100,
-                'parent' => $task->parent_id ?? 0,
-                'type' => $task->parent_id ? 'task' : 'project',
-                'user' => $task->user?->name ?? '',
-                'status' => $task->status,
-                'planned_effort' => $task->planned_effort,
-                'actual_effort' => $task->actual_effort,
+                // 'end_date' => $task->planned_end_date?->format('Y-m-d'), // durationがあるのでend_dateは不要
+                'duration' => $duration,
+                'progress' => $task->progress_percentage / 100, // dhtmlxは0から1の小数で進捗を表す
+                'parent'   => $task->parent_id ?? 0, // [修正] 親ID。ルートタスクは '0'
+                // 'open'     => true, // 最初から子タスクを開いておく場合は true を追加
+
+                // 以下はカスタムプロパティとして追加可能
+                'user'     => $task->user?->name ?? '未割り当て',
+                'status'   => $task->status_label,
             ];
+        })->filter(function ($task) {
+            // [修正] 開始日が設定されていないタスクはガントチャートに表示しない
+            return !is_null($task['start_date']);
         });
 
         return response()->json([
-            'data' => $ganttData,
+            'data'  => $ganttTasks->values(), // dhtmlxは 'data' キーでラップされた配列を期待する
             'links' => [] // タスク間の依存関係（将来の機能拡張用）
         ]);
     }

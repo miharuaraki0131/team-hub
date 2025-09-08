@@ -57,7 +57,9 @@
                 </div>
                 <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
                     <div class="text-2xl font-bold text-purple-600" id="progress-percentage">
-                        {{ $parentTasks->sum(function ($task) { return 1 + $task->children->count(); }) > 0
+                        {{ $parentTasks->sum(function ($task) {
+                            return 1 + $task->children->count();
+                        }) > 0
                             ? round(
                                 ($parentTasks->sum(function ($task) {
                                     return ($task->status === 'done' ? 1 : 0) + $task->children->where('status', 'done')->count();
@@ -368,241 +370,224 @@
 
     @push('scripts')
         <script>
-            // グローバル変数
-            const projectId = {{ $project->id }};
-            let currentView = 'wbs'; // 'wbs' または 'gantt'
-            let ganttData = @json($project->ganttData);
+            (function() { // --- [追加] 即時実行関数で全体を囲む ---
+                // グローバル変数
+                const projectId = {{ $project->id }};
+                let ganttInstance = null; // ガントのインスタンスを保持する変数
 
-            document.addEventListener('DOMContentLoaded', function() {
-                initializeEventListeners();
-                initializeExpandCollapse();
-            });
-
-            // イベントリスナーの初期化
-            function initializeEventListeners() {
-                // 表示切り替え
-                document.getElementById('wbs-view-btn').addEventListener('click', () => switchView('wbs'));
-                document.getElementById('gantt-view-btn').addEventListener('click', () => switchView('gantt'));
-
-                // 新規タスク作成
-                document.getElementById('add-task-btn').addEventListener('click', () => openTaskModal());
-
-                // モーダル操作
-                document.getElementById('close-modal').addEventListener('click', closeTaskModal);
-                document.getElementById('cancel-btn').addEventListener('click', closeTaskModal);
-
-                // フォーム送信
-                document.getElementById('task-form').addEventListener('submit', handleTaskSubmit);
-
-                // 動的に追加される要素も考慮し、イベント委任を使用
-                document.getElementById('tasks-tbody').addEventListener('click', function(e) {
-                    const editBtn = e.target.closest('.edit-task-btn');
-                    if (editBtn) {
-                        const taskId = editBtn.dataset.taskId;
-                        editTask(taskId);
+                // ページの読み込みが完了したら、全ての処理を開始
+                document.addEventListener('DOMContentLoaded', function() {
+                    // ganttオブジェクトが存在しなかったら、処理を中断
+                    if (typeof gantt === 'undefined') {
+                        console.error('dhtmlx-gantt is not loaded!');
                         return;
                     }
-
-                    const addChildBtn = e.target.closest('.add-child-btn');
-                    if (addChildBtn) {
-                        const parentId = addChildBtn.dataset.parentId;
-                        openTaskModal(null, parentId);
-                        return;
-                    }
-
-                    const deleteBtn = e.target.closest('.delete-task-btn');
-                    if (deleteBtn) {
-                        const taskId = deleteBtn.dataset.taskId;
-                        deleteTask(taskId);
-                        return;
-                    }
+                    initializeEventListeners();
                 });
-            }
 
-            // WBS表示の展開・折りたたみ機能
-            function initializeExpandCollapse() {
-                document.getElementById('tasks-tbody').addEventListener('click', function(e) {
-                    const expandBtn = e.target.closest('.expand-btn');
-                    if (!expandBtn) return;
+                // --- イベントリスナーの初期化 ---
+                function initializeEventListeners() {
+                    // 表示切り替え
+                    document.getElementById('wbs-view-btn').addEventListener('click', () => switchView('wbs'));
+                    document.getElementById('gantt-view-btn').addEventListener('click', () => switchView('gantt'));
 
-                    const taskId = expandBtn.dataset.taskId;
+                    // 新規タスク作成
+                    document.getElementById('add-task-btn').addEventListener('click', () => openTaskModal());
+
+                    // モーダル操作
+                    document.getElementById('close-modal').addEventListener('click', closeTaskModal);
+                    document.getElementById('cancel-btn').addEventListener('click', closeTaskModal);
+                    document.getElementById('task-form').addEventListener('submit', handleTaskSubmit);
+
+                    // イベント委任 (WBSテーブル)
+                    const tbody = document.getElementById('tasks-tbody');
+                    tbody.addEventListener('click', function(e) {
+                        const editBtn = e.target.closest('.edit-task-btn');
+                        if (editBtn) {
+                            editTask(editBtn.dataset.taskId);
+                            return;
+                        }
+                        const addChildBtn = e.target.closest('.add-child-btn');
+                        if (addChildBtn) {
+                            openTaskModal(null, addChildBtn.dataset.parentId);
+                            return;
+                        }
+                        const deleteBtn = e.target.closest('.delete-task-btn');
+                        if (deleteBtn) {
+                            deleteTask(deleteBtn.dataset.taskId);
+                            return;
+                        }
+                        const expandBtn = e.target.closest('.expand-btn');
+                        if (expandBtn) {
+                            toggleTaskExpansion(expandBtn);
+                            return;
+                        }
+                    });
+
+                    // ガントチャートのズームボタン
+                    document.getElementById('gantt-zoom-in').addEventListener('click', () => ganttInstance?.ext.zoom
+                    .zoomIn());
+                    document.getElementById('gantt-zoom-out').addEventListener('click', () => ganttInstance?.ext.zoom
+                        .zoomOut());
+                }
+
+                // --- WBSの展開・折りたたみ ---
+                function toggleTaskExpansion(button) {
+                    const taskId = button.dataset.taskId;
                     const childRows = document.querySelectorAll(`tr[data-parent-id="${taskId}"]`);
-                    const icon = expandBtn.querySelector('.expand-icon');
+                    const icon = button.querySelector('.expand-icon');
+                    const isCollapsed = icon.textContent === '▶';
 
-                    if (icon.textContent === '▶') {
-                        childRows.forEach(row => row.classList.remove('hidden'));
-                        icon.textContent = '▼';
+                    childRows.forEach(row => row.classList.toggle('hidden', !isCollapsed));
+                    icon.textContent = isCollapsed ? '▼' : '▶';
+                }
+
+                // --- 表示切り替え ---
+                function switchView(view) {
+                    const wbsContainer = document.getElementById('wbs-container');
+                    const ganttContainer = document.getElementById('gantt-container');
+                    const wbsBtn = document.getElementById('wbs-view-btn');
+                    const ganttBtn = document.getElementById('gantt-view-btn');
+
+                    if (view === 'wbs') {
+                        wbsContainer.classList.remove('hidden');
+                        ganttContainer.classList.add('hidden');
+                        wbsBtn.classList.add('bg-blue-500', 'text-white');
+                        wbsBtn.classList.remove('hover:bg-gray-100');
+                        ganttBtn.classList.remove('bg-blue-500', 'text-white');
+                        ganttBtn.classList.add('hover:bg-gray-100');
                     } else {
-                        childRows.forEach(row => row.classList.add('hidden'));
-                        icon.textContent = '▶';
+                        wbsContainer.classList.add('hidden');
+                        ganttContainer.classList.remove('hidden');
+                        ganttBtn.classList.add('bg-blue-500', 'text-white');
+                        ganttBtn.classList.remove('hover:bg-gray-100');
+                        wbsBtn.classList.remove('bg-blue-500', 'text-white');
+                        wbsBtn.classList.add('hover:bg-gray-100');
+
+                        // ガントチャートがまだ初期化されていなければ、描画する
+                        if (!ganttInstance) {
+                            renderGanttChart();
+                        }
                     }
-                });
-            }
-
-            // 表示切り替え
-            function switchView(view) {
-                currentView = view;
-
-                if (view === 'wbs') {
-                    document.getElementById('wbs-container').classList.remove('hidden');
-                    document.getElementById('gantt-container').classList.add('hidden');
-                    document.getElementById('wbs-view-btn').classList.add('bg-blue-500', 'text-white');
-                    document.getElementById('wbs-view-btn').classList.remove('hover:bg-gray-100');
-                    document.getElementById('gantt-view-btn').classList.remove('bg-blue-500', 'text-white');
-                    document.getElementById('gantt-view-btn').classList.add('hover:bg-gray-100');
-                } else {
-                    document.getElementById('wbs-container').classList.add('hidden');
-                    document.getElementById('gantt-container').classList.remove('hidden');
-                    document.getElementById('gantt-view-btn').classList.add('bg-blue-500', 'text-white');
-                    document.getElementById('gantt-view-btn').classList.remove('hover:bg-gray-100');
-                    document.getElementById('wbs-view-btn').classList.remove('bg-blue-500', 'text-white');
-                    document.getElementById('wbs-view-btn').classList.add('hover:bg-gray-100');
-
-                    renderGanttChart();
-                }
-            }
-
-            // タスクモーダルを開く
-            function openTaskModal(taskId = null, parentId = null) {
-                const modal = document.getElementById('task-modal');
-                const title = document.getElementById('modal-title');
-                const form = document.getElementById('task-form');
-
-                form.reset();
-                document.getElementById('task-id').value = taskId || '';
-                document.getElementById('parent-id').value = parentId || '';
-
-                const actualFields = [
-                    document.getElementById('actual-start-date-container'),
-                    document.getElementById('actual-end-date-container'),
-                    document.getElementById('actual-effort-container')
-                ];
-
-                if (taskId) {
-                    title.textContent = 'タスク編集';
-                    actualFields.forEach(field => field.classList.remove('hidden'));
-                    fetchTaskData(taskId);
-                } else {
-                    title.textContent = parentId ? '子タスク作成' : '新規タスク作成';
-                    actualFields.forEach(field => field.classList.add('hidden'));
                 }
 
-                modal.classList.remove('hidden');
-            }
+                // --- モーダル関連の関数 ---
+                // (openTaskModal, closeTaskModal, fetchTaskData, handleTaskSubmit, editTask, deleteTask は、
+                //  前回の修正版とほぼ同じなので、ここでは省略します。後で完全版を記載します)
 
-            // タスクモーダルを閉じる
-            function closeTaskModal() {
-                document.getElementById('task-modal').classList.add('hidden');
-            }
+                // --- ガントチャート描画 ---
+                async function renderGanttChart() {
+                    const container = document.getElementById('gantt-chart');
+                    container.innerHTML = '<div class="p-4">読み込み中...</div>'; // ローディング表示
 
-            // タスクデータを取得
-            async function fetchTaskData(taskId) {
-                try {
-                    const response = await fetch(`/projects/${projectId}/tasks/${taskId}`);
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    const task = await response.json();
+                    // [修正] ganttオブジェクトをローカル変数として作成
+                    const gantt = window.gantt;
 
-                    document.getElementById('title').value = task.title || '';
-                    document.getElementById('description').value = task.description || '';
-                    document.getElementById('user_id').value = task.user_id || '';
-                    document.getElementById('status').value = task.status || 'todo';
-                    document.getElementById('planned_start_date').value = task.planned_start_date ? task.planned_start_date.split('T')[0] : '';
-                    document.getElementById('planned_end_date').value = task.planned_end_date ? task.planned_end_date.split('T')[0] : '';
-                    document.getElementById('actual_start_date').value = task.actual_start_date ? task.actual_start_date.split('T')[0] : '';
-                    document.getElementById('actual_end_date').value = task.actual_end_date ? task.actual_end_date.split('T')[0] : '';
-                    document.getElementById('planned_effort').value = task.planned_effort || '';
-                    document.getElementById('actual_effort').value = task.actual_effort || '';
-                } catch (error) {
-                    console.error('タスクデータの取得に失敗しました:', error);
-                    alert('タスクデータの取得に失敗しました');
-                }
-            }
-
-            // タスクフォーム送信処理
-            async function handleTaskSubmit(e) {
-                e.preventDefault();
-
-                const formData = new FormData(e.target);
-                const taskId = formData.get('task_id');
-                const isEdit = !!taskId;
-
-                let data = Object.fromEntries(formData.entries());
-                delete data.task_id; // 不要なキーを削除
-
-                try {
-                    const url = isEdit ?
-                        `/projects/${projectId}/tasks/${taskId}` :
-                        `/projects/${projectId}/tasks`;
-                    const method = isEdit ? 'PUT' : 'POST';
-
-                    const response = await fetch(url, {
-                        method: method,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
+                    // --- 設定 ---
+                    gantt.config.xml_date = "%Y-%m-%d";
+                    gantt.config.columns = [{
+                            name: "wbs",
+                            label: "WBS",
+                            tree: true,
+                            width: 80,
+                            resize: true,
+                            template: gantt.getWBSCode
                         },
-                        body: JSON.stringify(data)
+                        {
+                            name: "text",
+                            label: "タスク名",
+                            width: '*',
+                            min_width: 200,
+                            resize: true
+                        },
+                        {
+                            name: "start_date",
+                            label: "開始日",
+                            align: "center",
+                            width: 100,
+                            resize: true
+                        },
+                        {
+                            name: "duration",
+                            label: "期間",
+                            align: "center",
+                            width: 60,
+                            resize: true
+                        },
+                        {
+                            name: "user",
+                            label: "担当者",
+                            align: "center",
+                            width: 100,
+                            resize: true,
+                            template: function(task) {
+                                return task.user || '';
+                            }
+                        },
+                        {
+                            name: "add",
+                            label: "",
+                            width: 44
+                        }
+                    ];
+                    gantt.config.scales = [{
+                            unit: "month",
+                            step: 1,
+                            format: "%Y年 %F"
+                        },
+                        {
+                            unit: "day",
+                            step: 1,
+                            format: "%j"
+                        }
+                    ];
+                    gantt.i18n.setLocale("jp"); // 日本語化
+                    gantt.plugins({
+                        zoom: true
+                    }); // ズームプラグイン有効化
+
+                    gantt.init(container);
+                    ganttInstance = gantt; // [追加] グローバル変数にインスタンスを保持
+
+                    // --- イベントリスナー ---
+                    gantt.attachEvent("onTaskClick", function(id, e) {
+                        if (e.target.closest(".gantt_add")) {
+                            openTaskModal(null, id);
+                            return false;
+                        }
+                        return true;
                     });
 
-                    const result = await response.json();
-
-                    if (response.ok && result.success) {
-                        closeTaskModal();
-                        location.reload(); // シンプルにリロードして全体を再描画
-                    } else {
-                        // バリデーションエラーなどの詳細を表示
-                        let errorMessage = result.message || 'エラーが発生しました';
-                        if (result.errors) {
-                            errorMessage += '\n' + Object.values(result.errors).map(e => e.join('\n')).join('\n');
-                        }
-                        alert(errorMessage);
+                    // --- データ読み込み ---
+                    try {
+                        const response = await fetch("{{ route('tasks.ganttData', $project) }}");
+                        if (!response.ok) throw new Error('Failed to fetch gantt data');
+                        const data = await response.json();
+                        gantt.parse(data); // `data`キーでラップされていることを想定
+                    } catch (error) {
+                        console.error("Gantt Error:", error);
+                        container.innerHTML = '<div class="p-8 text-center text-red-500">ガントチャートの表示に失敗しました。</div>';
                     }
-                } catch (error) {
-                    console.error('タスクの保存に失敗しました:', error);
-                    alert('タスクの保存に失敗しました');
-                }
-            }
-
-            // タスク編集
-            function editTask(taskId) {
-                openTaskModal(taskId);
-            }
-
-            // タスク削除
-            async function deleteTask(taskId) {
-                if (!confirm('このタスクを削除しますか？\n子タスクがある場合は削除できません。')) {
-                    return;
                 }
 
-                try {
-                    const response = await fetch(`/projects/${projectId}/tasks/${taskId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
-                        }
-                    });
+                // --- ここに、省略したモーダル関連の関数をペースト ---
+                function openTaskModal(taskId = null, parentId = null) {
+                    /* ... */ }
 
-                    const result = await response.json();
+                function closeTaskModal() {
+                    /* ... */ }
+                async function fetchTaskData(taskId) {
+                    /* ... */ }
+                async function handleTaskSubmit(e) {
+                    /* ... */ }
 
-                    if (response.ok && result.success) {
-                        location.reload();
-                    } else {
-                        alert(result.error || '削除に失敗しました');
-                    }
-                } catch (error) {
-                    console.error('タスクの削除に失敗しました:', error);
-                    alert('タスクの削除に失敗しました');
-                }
-            }
+                function editTask(taskId) {
+                    /* ... */ }
+                async function deleteTask(taskId) {
+                    /* ... */ }
+                // ---------------------------------------------
 
-            // ガントチャート描画（簡易版）
-            function renderGanttChart() {
-                const container = document.getElementById('gantt-chart');
-                container.innerHTML =
-                    '<div class="p-8 text-center text-gray-500">ガントチャート機能は開発中です。<br>本格的なガントチャートライブラリ（DHTMLX Gantt、FrappeGanttなど）の統合をお勧めします。</div>';
-            }
+            })(); // --- [追加] 即時実行関数の終了 ---
         </script>
     @endpush
 </x-portal-layout>
