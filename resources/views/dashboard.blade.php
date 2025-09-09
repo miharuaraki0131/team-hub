@@ -272,6 +272,38 @@
                         </div>
                     </div>
 
+                    {{-- 最近のプロジェクト --}}
+                    <div class="bg-white rounded-lg shadow-md border border-gray-200">
+                        <div class="p-4 border-b">
+                            <h3 class="text-lg font-bold">📊 最新のプロジェクト</h3>
+                        </div>
+                        <div class="p-4">
+                            <ul class="space-y-4">
+                                @forelse ($recentProjects as $project)
+                                    <li>
+                                        <a href="{{ route('tasks.index', $project) }}"
+                                            class="block p-3 bg-gray-50 hover:bg-blue-50 rounded-lg transition">
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-bold text-blue-700">{{ $project->name }}</span>
+                                                <span class="text-sm text-gray-500 bg-white px-2 py-1 rounded-full">
+                                                    タスク: {{ $project->tasks_count }}
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @empty
+                                    <li class="text-gray-500">進行中のプロジェクトはありません。</li>
+                                @endforelse
+                            </ul>
+                            <div class="mt-4 text-right">
+                                <a href="{{ route('projects.index') }}"
+                                    class="text-sm font-semibold text-blue-600 hover:underline">
+                                    全てのプロジェクトを見る →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- チームの活動状況（デイリーパルス） --}}
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                         <div class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6">
