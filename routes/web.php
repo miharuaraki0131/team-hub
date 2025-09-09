@@ -29,7 +29,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// ログアウト時のリダイレクト先（Breezeのデフォルトは'/'なので、明示的に指定）
+// ログアウト時のリダイレクト先
 Route::get('/logout', function () {
     return redirect()->route('login');
 });
@@ -67,17 +67,20 @@ Route::middleware('auth')->group(function () {
     // プロジェクト (Projects)
     Route::resource('projects', ProjectController::class);
 
-    // タスク管理 (Tasks) - プロジェクトにネスト
+    // タスク管理 (Tasks) - プロジェクトにネストされたリソースとして定義
     Route::prefix('projects/{project}')->name('tasks.')->group(function () {
+        // WBS/ガントチャート表示
         Route::get('/tasks', [TaskController::class, 'index'])->name('index');
+        // ガントチャート用のJSONデータ取得
+        Route::get('/gantt-data', [TaskController::class, 'getGanttData'])->name('ganttData');
+        // タスクのCRUD操作（JSON API）
         Route::post('/tasks', [TaskController::class, 'store'])->name('store');
         Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('show');
         Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('update');
         Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('destroy');
-        
-        // 追加機能のルート
-        Route::get('/gantt-data', [TaskController::class, 'getGanttData'])->name('ganttData');
+        // タスクの並び順一括更新
         Route::put('/tasks-positions', [TaskController::class, 'updatePositions'])->name('updatePositions');
+        // プロジェクト進捗サマリー取得
         Route::get('/summary', [TaskController::class, 'getProjectSummary'])->name('summary');
     });
 
