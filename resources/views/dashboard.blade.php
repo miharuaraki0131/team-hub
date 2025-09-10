@@ -273,9 +273,12 @@
                     </div>
 
                     {{-- 最近のプロジェクト --}}
-                    <div class="bg-white rounded-lg shadow-md border border-gray-200">
-                        <div class="p-4 border-b">
-                            <h3 class="text-lg font-bold">📊 最新のプロジェクト</h3>
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                        <div
+                            class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                            <h2 class="text-xl lg:text-2xl font-bold text-slate-800 flex items-center">
+                                <span class="text-blue-600 mr-3"></span>📊 最新のプロジェクト
+                            </h2>
                         </div>
                         <div class="p-4">
                             <ul class="space-y-4">
@@ -304,47 +307,46 @@
                         </div>
                     </div>
 
-                    {{-- チームの活動状況（デイリーパルス） --}}
-                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                        <div class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6">
-                            <h2 class="text-xl lg:text-2xl font-bold text-slate-800 flex items-center">
-                                <span class="text-amber-600 mr-3">👥</span>チームの活動状況
-                            </h2>
-                            <p class="text-sm text-gray-600 mt-2">同じ部署のメンバーの今日の活動状況</p>
-                        </div>
-
-                        <div class="divide-y divide-gray-100">
-                            @forelse ($teamMembers as $member)
-                                <div class="p-4 flex justify-between items-center">
-                                    {{-- メンバー名 --}}
-                                    <span class="font-bold text-gray-800">{{ $member->name }}</span>
-
-                                    {{-- 日報ステータス --}}
-                                    @if (isset($dailyReportStatuses[$member->id]))
-                                        {{-- [提出済み] --}}
-                                        <span
-                                            class="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">
-                                            ✅ 提出済み
-                                        </span>
-                                    @else
-                                        {{-- [未提出] --}}
-                                        <span
-                                            class="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full">
-                                            📝 未提出
-                                        </span>
-                                    @endif
-                                </div>
-                            @empty
-                                <div class="p-8 text-center text-gray-500">
-                                    <p>同じ部署に、他のメンバーがいません。</p>
-                                </div>
-                            @endforelse
-                        </div>
+                {{-- チームの活動状況（デイリーパルス） --}}
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                    <div class="bg-slate-100 border-b border-gray-200 p-4 lg:p-6">
+                        <h2 class="text-xl lg:text-2xl font-bold text-slate-800 flex items-center">
+                            <span class="text-amber-600 mr-3">👥</span>チームの活動状況
+                        </h2>
+                        <p class="text-sm text-gray-600 mt-2">同じ部署のメンバーの今日の活動状況</p>
                     </div>
 
+                    <div class="divide-y divide-gray-100">
+                        @forelse ($teamMembers as $member)
+                            <div class="p-4 flex justify-between items-center">
+                                {{-- メンバー名 --}}
+                                <span class="font-bold text-gray-800">{{ $member->name }}</span>
+
+                                {{-- 日報ステータス --}}
+                                @if (isset($dailyReportStatuses[$member->id]))
+                                    {{-- [提出済み] --}}
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">
+                                        ✅ 提出済み
+                                    </span>
+                                @else
+                                    {{-- [未提出] --}}
+                                    <span
+                                        class="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full">
+                                        📝 未提出
+                                    </span>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="p-8 text-center text-gray-500">
+                                <p>同じ部署に、他のメンバーがいません。</p>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
+
             </div>
         </div>
+    </div>
     </div>
 
     @push('styles')

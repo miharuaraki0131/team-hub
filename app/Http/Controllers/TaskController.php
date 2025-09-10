@@ -49,7 +49,7 @@ class TaskController extends Controller
         ]);
 
         // 親タスクが指定されている場合、同一プロジェクト内かチェック
-        if ($validated['parent_id']) {
+        if (isset($validated['parent_id']) && $validated['parent_id']) {
             $parentTask = Task::find($validated['parent_id']);
             if ($parentTask->project_id !== $project->id) {
                 return response()->json(['error' => '親タスクは同一プロジェクト内である必要があります'], 422);
@@ -59,12 +59,12 @@ class TaskController extends Controller
         $task = Task::create([
             'project_id' => $project->id,
             'title' => $validated['title'],
-            'description' => $validated['description'],
-            'user_id' => $validated['user_id'],
-            'parent_id' => $validated['parent_id'],
-            'planned_start_date' => $validated['planned_start_date'],
-            'planned_end_date' => $validated['planned_end_date'],
-            'planned_effort' => $validated['planned_effort'],
+            'description' => $validated['description'] ?? null,
+            'user_id' => $validated['user_id'] ?? null,
+            'parent_id' => $validated['parent_id'] ?? null,
+            'planned_start_date' => $validated['planned_start_date'] ?? null,
+            'planned_end_date' => $validated['planned_end_date'] ?? null,
+            'planned_effort' => $validated['planned_effort'] ?? null,
             'status' => $validated['status'] ?? 'todo',
             'created_by' => Auth::id(),
         ]);

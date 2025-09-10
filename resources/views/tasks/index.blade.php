@@ -445,7 +445,7 @@
 
                     // ガントチャートのズームボタン
                     document.getElementById('gantt-zoom-in').addEventListener('click', () => ganttInstance?.ext.zoom
-                    .zoomIn());
+                        .zoomIn());
                     document.getElementById('gantt-zoom-out').addEventListener('click', () => ganttInstance?.ext.zoom
                         .zoomOut());
 
@@ -684,8 +684,124 @@
 
                     const gantt = window.gantt;
 
-                    // --- 1. 設定 ---
+                    // --- 1. 基本設定 ---
                     gantt.config.xml_date = "%Y-%m-%d";
+                    gantt.config.date_format = "%Y-%m-%d %H:%i";
+                    gantt.config.date_grid = "%Y/%m/%d";
+
+                    // --- 2. 日本語化設定 ---
+                    gantt.plugins({
+                        zoom: true,
+                        modal: true
+                    });
+
+                    // 標準の日本語ロケールを適用
+                    gantt.i18n.setLocale("jp");
+
+                    // 必要に応じて追加・上書き
+                    Object.assign(gantt.locale.labels, {
+                        new_task: "新しいタスク",
+                        dhx_cal_today_button: "今日",
+                        day_tab: "日",
+                        week_tab: "週",
+                        month_tab: "月",
+                        new_event: "新規イベント",
+                        icon_save: "保存",
+                        icon_cancel: "キャンセル",
+                        icon_details: "詳細",
+                        icon_edit: "編集",
+                        icon_delete: "削除",
+                        confirm_closing: "変更内容は失われます。よろしいですか？",
+                        confirm_deleting: "このタスクを削除しますか？",
+                        section_description: "説明",
+                        section_time: "期間",
+                        section_type: "タイプ",
+                        section_text: "タスク名",
+                        section_start_date: "開始日",
+                        section_end_date: "終了日",
+                        section_duration: "期間",
+                        section_parent: "親タスク",
+                        section_priority: "優先度",
+                        section_owner: "担当者",
+                        section_progress: "進捗",
+                        section_template: "テンプレート",
+                        save_button: "保存",
+                        cancel_button: "キャンセル",
+                        delete_button: "削除"
+                    });
+
+                    // --- 3. ライトボックス（モーダル）の設定 ---
+                    gantt.config.lightbox.sections = [{
+                            name: "description",
+                            height: 70,
+                            map_to: "text",
+                            type: "textarea",
+                            focus: true
+                        },
+                        {
+                            name: "owner",
+                            height: 60,
+                            map_to: "owner",
+                            type: "select",
+                            options: []
+                        },
+                        {
+                            name: "time",
+                            type: "duration",
+                            map_to: "auto",
+                            time_format: ["%Y", "%m", "%d"]
+                        },
+                        {
+                            name: "priority",
+                            height: 60,
+                            map_to: "priority",
+                            type: "select",
+                            options: [{
+                                    key: 1,
+                                    label: "高"
+                                },
+                                {
+                                    key: 2,
+                                    label: "中"
+                                },
+                                {
+                                    key: 3,
+                                    label: "低"
+                                }
+                            ]
+                        }
+                    ];
+
+                    // ライトボックスのフィールドラベル
+                    gantt.locale.labels.section_description = "説明";
+                    gantt.locale.labels.section_owner = "担当者";
+                    gantt.locale.labels.section_time = "期間";
+                    gantt.locale.labels.section_priority = "優先度";
+
+                    // 期間入力の設定
+                    gantt.config.duration_unit = "day";
+                    gantt.config.duration_step = 1;
+
+                    gantt.templates.task_date = function(date) {
+                        return gantt.date.date_to_str("%Y年%m月%d日")(date);
+                    };
+
+                    // --- 4. 日付形式の設定 ---
+                    gantt.config.date_format = "%Y-%m-%d %H:%i";
+                    gantt.templates.lightbox_date_format = gantt.date.date_to_str("%Y-%m-%d");
+                    gantt.config.date_grid = "%Y-%m-%d";
+
+                    gantt.templates.date_grid = function(date) {
+                        if (!date) return "-";
+                        return gantt.date.date_to_str("%Y-%m-%d")(date);
+                    };
+
+                    gantt.templates.lightbox_header = function(start, end) {
+                        var formatFunc = gantt.date.date_to_str("%Y年%m月%d日");
+                        return formatFunc(start) + " - " + formatFunc(end);
+                    };
+
+                    // --- 5. カラム設定 ---
                     gantt.config.columns = [{
                             name: "wbs",
                             label: "WBS",
@@ -705,18 +821,18 @@
                             name: "start_date",
                             label: "開始日",
                             align: "center",
-                            width: 80,
+                            width: 100,
                             resize: true,
                             template: function(task) {
-                                if (task.start_date) return gantt.date.date_to_str("%m/%d")(task.start_date);
+                                if (task.start_date) return gantt.date.date_to_str("%Y-%m-%d")(task.start_date);
                                 return "-";
                             }
                         },
                         {
                             name: "duration",
-                            label: "期間",
+                            label: "期間(日)",
                             align: "center",
-                            width: 60,
+                            width: 70,
                             resize: true
                         },
                         {
@@ -736,7 +852,7 @@
                         }
                     ];
 
-                    // ズーム設定
+                    // --- 6. ズーム設定 ---
                     gantt.ext.zoom.init({
                         levels: [{
                                 name: "day",
@@ -745,7 +861,7 @@
                                 scales: [{
                                     unit: "day",
                                     step: 1,
-                                    format: "%d %M"
+                                    format: "%m/%d"
                                 }]
                             },
                             {
@@ -756,10 +872,10 @@
                                         unit: "week",
                                         step: 1,
                                         format: function(date) {
-                                            var dateToStr = gantt.date.date_to_str("%m/%d");
+                                            var dateToStr = gantt.date.date_to_str("%Y-%m-%d");
                                             var endDate = gantt.date.add(gantt.date.add(date, 1,
                                                 "week"), -1, "day");
-                                            return dateToStr(date) + " - " + dateToStr(endDate);
+                                            return dateToStr(date) + " ～ " + dateToStr(endDate);
                                         }
                                     },
                                     {
@@ -776,29 +892,22 @@
                                 scales: [{
                                         unit: "month",
                                         step: 1,
-                                        format: "%F, %Y"
+                                        format: "%Y年%m月"
                                     },
                                     {
                                         unit: "week",
                                         step: 1,
-                                        format: "Week #%W"
+                                        format: "第%W週"
                                     }
                                 ]
                             }
                         ]
                     });
 
-                    // --- 2. プラグインと日本語化 ---
-                    gantt.plugins({
-                        zoom: true
-                    });
-                    gantt.i18n.setLocale("jp");
-
-                    // --- 3. 初期化 ---
+                    // --- 7. 初期化とイベント設定 ---
                     gantt.init(chartContainer);
                     ganttInstance = gantt;
 
-                    // --- 4. イベントリスナー ---
                     gantt.attachEvent("onGanttReady", function() {
                         gantt.attachEvent("onTaskClick", function(id, e) {
                             if (e.target.closest(".gantt_add")) {
@@ -809,7 +918,7 @@
                         });
                     });
 
-                    // --- 5. データ読み込み ---
+                    // データ読み込み
                     try {
                         const response = await fetch("{{ route('tasks.ganttData', $project) }}");
                         if (!response.ok) throw new Error('Failed to fetch gantt data');
@@ -820,6 +929,7 @@
                         chartContainer.innerHTML = '<div class="p-8 text-center text-red-500">ガントチャートの表示に失敗しました。</div>';
                     }
                 }
+
 
             })(); // --- 即時実行関数の終了 ---
         </script>

@@ -10,6 +10,8 @@ use App\Models\WeeklyGoal;
 use App\Models\User;
 use App\Models\Knowledge;
 use App\Models\Event;
+use App\Models\Project;
+use App\Models\Task;
 
 class DashboardController extends Controller
 {
@@ -88,6 +90,21 @@ class DashboardController extends Controller
             ->keyBy('user_id');
 
 
+        // 最新のプロジェクトを5件取得
+        $recentProjects = Project::withCount('tasks')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // ログインユーザーが担当する、未完了のタスクを5件取得
+        $myTasks = Task::where('user_id', $user->id)
+            ->where('status', '!=', 'done')
+            ->orderBy('planned_end_date', 'asc')
+            ->with('project')
+            ->take(5)
+            ->get();
+
+
         return view('dashboard', [
             'user' => $user,
             'todaysPlan' => $todaysPlan,
@@ -98,6 +115,8 @@ class DashboardController extends Controller
             'thisWeeksEvents' => $thisWeeksEvents, // 今週の予定を追加
             'teamMembers' => $teamMembers, // チームメンバー情報を追加
             'dailyReportStatuses' => $dailyReportStatuses, // 日報提出状況を追加
+            'recentProjects' => $recentProjects, // 最新のプロジェクトを追加
+            'myTasks' => $myTasks,
         ]);
     }
 }
