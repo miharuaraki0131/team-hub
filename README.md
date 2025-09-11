@@ -7,7 +7,7 @@
 日報、WBS、ガントチャート、スケジュール、ナレッジ共有など、チーム内に散在しがちな情報を一元管理し、直感的で美しいインターフェースで業務改善をサポートします。
 
 これは単なるポートフォリオではなく、「チームをこう変えたい」という強い意志を形にした、実用的なアプリケーションです。
-![alt text](Teamhub-er.png)
+![alt text](./docs/Teamhub-er.png)
 
 ## 2. 主な機能 (Features)
 
@@ -21,24 +21,24 @@
 - 日報作成・編集・閲覧。
 - ユーザーごとの週報（週間目標と日報のサマリー）表示。
 - 日報提出時に部署ごとの指定メールアドレスへ自動通知。
-![alt text](weekly-report.png)
+![alt text](./docs/weekly-report.png)
 
 ### スケジュールハブ
 - `FullCalendar.js` を利用した、チームメンバー共有のインタラクティブなカレンダー。
 - 予定のCRUD操作、終日フラグ、公開範囲（公開/プライベート）設定。
 - ドラッグ＆ドロップによる直感的な日付・期間変更。
-![alt text](calender.png)
+![alt text](./docs/calender.png)
 
 ### ナレッジハブ
 - 議事録やマニュアルなど、チームの知識資産をストック・共有。
 - キーワードやカテゴリによる強力な検索・フィルタリング機能。
 - 重要記事のピン留め機能。
-![alt text](knoeledge.png)
+![alt text](./docs/knoeledge.png)
 
 ### 管理者機能
 - ユーザー管理（権限変更・削除）。
 - 部署管理（通知先メールアドレス設定含む）。
-![alt text](divisions.png)
+![alt text](./docs/divisions.png)
 
 ## 3. 技術スタック (Tech Stack)
 
