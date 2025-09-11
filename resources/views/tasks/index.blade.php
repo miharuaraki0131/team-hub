@@ -541,10 +541,18 @@
 
                 async function fetchTaskData(taskId) {
                     try {
-                        const response = await fetch("{{ route('tasks.ganttData', $project) }}");
+                        // 個別タスク取得APIを叩く
+                        const response = await fetch(`/projects/${projectId}/tasks/${taskId}`, {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+
                         if (!response.ok) throw new Error('Network response was not ok');
+
                         const task = await response.json();
 
+                        // フォームに値をセット
                         document.getElementById('title').value = task.title || '';
                         document.getElementById('description').value = task.description || '';
                         document.getElementById('user_id').value = task.user_id || '';
@@ -564,6 +572,7 @@
                         alert('タスクデータの取得に失敗しました');
                     }
                 }
+
 
                 async function handleTaskSubmit(e) {
                     e.preventDefault();
