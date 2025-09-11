@@ -1,61 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TeamHub - 最高のチームのための、オールインワン・ワークスペース
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. 概要 (Overview)
 
-## About Laravel
+**TeamHub**は、「Excelとメール連絡からの解放」をコンセプトに開発された、チーム内の情報共有と業務プロセスを効率化するためのオールインワン・ワークスペースです。
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+日報、WBS、ガントチャート、スケジュール、ナレッジ共有など、チーム内に散在しがちな情報を一元管理し、直感的で美しいインターフェースで業務改善をサポートします。
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+これは単なるポートフォリオではなく、「もし自分に裁量があれば、チームをこう変えたい」という強い意志を形にした、実用的なアプリケーションです。
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 2. 主な機能 (Features)
 
-## Learning Laravel
+### プロジェクト・タスク管理
+- **WBS (階層型タスク管理)**: 親子関係を持つタスクを階層で管理し、プロジェクトの全体像を明確化。
+- **インタラクティブ・ガントチャート**: `dhtmlx-gantt` を活用し、タスクのスケジュールと進捗を視覚的に表示。ドラッグ＆ドロップでの期間変更や並び替えにも対応。
+- **WBS/ガントチャート表示切替**: ワンクリックで2つのビューをスムーズに切り替え可能。
+- **進捗管理**: `todo`, `in_progress`, `done` のステータス管理と、プロジェクト全体のリアルタイム進捗サマリー表示。
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 日報・週報ハブ
+- Markdown対応エディタでの日報作成・編集・閲覧。
+- ユーザーごとの週報（週間目標と日報のサマリー）表示。
+- 日報提出時に部署ごとの指定メールアドレスへ自動通知。
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### スケジュールハブ
+- `FullCalendar.js` を利用した、チームメンバー共有のインタラクティブなカレンダー。
+- 予定のCRUD操作、終日フラグ、公開範囲（公開/プライベート）設定。
+- ドラッグ＆ドロップによる直感的な日付・期間変更。
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### ナレッジハブ
+- 議事録やマニュアルなど、チームの知識資産をストック・共有。
+- キーワードやカテゴリによる強力な検索・フィルタリング機能。
+- 重要記事のピン留め機能。
 
-## Laravel Sponsors
+### 管理者機能
+- ユーザー管理（招待・権限変更・削除）。
+- 部署管理（通知先メールアドレス設定含む）。
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 3. 技術スタック (Tech Stack)
 
-### Premium Partners
+### バックエンド
+- **PHP**: 8.2
+- **Laravel**: 10.x
+- **データベース**: MySQL 8.0
+- **キャッシュ**: Redis
+- **認証**: Laravel Breeze
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### フロントエンド
+- **JavaScript (Vanilla JS)**: モーダル制御、AJAX通信、DOM操作
+- **CSS**: Tailwind CSS 3.x
+- **UIライブラリ**:
+  - **dhtmlx-gantt**: ガントチャート機能
+  - **FullCalendar.js**: スケジュール機能
 
-## Contributing
+### 開発・本番環境
+- **開発環境**: Docker, Laravel Sail (WSL2)
+- **テスト**: PHPUnit (Feature Test)
+- **本番環境想定**: AWS EC2 / Nginx / MySQL / Redis
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 4. 環境構築 (Installation)
 
-## Code of Conduct
+### 前提条件
+- Docker Desktop がインストールされていること。
+- Windowsの場合、WSL2が有効になっていること。
+- Git, Node.js, npmがインストールされていること。
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 手順
+1.  **リポジトリをクローン**
+    ```bash
+    git clone https://github.com/your-username/teamhub.git
+    cd teamhub
+    ```
 
-## Security Vulnerabilities
+2.  **Laravel Sailのエイリアスを設定（推奨）**
+    ```bash
+    alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3.  **`.env` ファイルの準備**
+    `.env.example` をコピーして `.env` ファイルを作成します。
+    ```bash
+    cp .env.example .env
+    ```
 
-## License
+4.  **Dockerコンテナの起動と依存パッケージのインストール**
+    ```bash
+    # 初回のみ実行
+    sail up -d
+    sail composer install
+    sail npm install
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5.  **アプリケーションキーの生成**
+    ```bash
+    sail artisan key:generate
+    ```
+
+6.  **データベースのマイグレーション**
+    データベースのテーブルを作成し、初期データを投入します。
+    ```bash
+    # テーブル作成
+    sail artisan migrate
+
+    # （もしあれば）初期データ投入
+    sail artisan db:seed
+    ```
+
+7.  **フロントエンドアセットのビルド**
+    ```bash
+    sail npm run dev
+    ```
+
+8.  **アプリケーションへアクセス**
+    ブラウザで `http://localhost` にアクセスしてください。
+
+## 5. テストの実行
+
+PHPUnitを使用した機能テストを実行できます。
+```bash
+sail artisan test
+```
+
+## 6. 今後の展望 (Future Plans)
+
+- **【高優先度】**: カンバンボード表示、タスク間依存関係、ファイル添付機能
+- **【中優先度】**: 工数分析レポート、コメント機能
+- **【低優先度】**: AIアシスタントによる進捗予測、外部ツール連携（Slack, GitHub）
+
+---
