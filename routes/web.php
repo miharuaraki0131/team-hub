@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DivisionController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,7 +37,7 @@ Route::get('/logout', function () {
 
 // 認証必須エリア
 Route::middleware('auth')->group(function () {
-    
+
     // ダッシュボード
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -82,6 +83,13 @@ Route::middleware('auth')->group(function () {
         Route::put('/tasks-positions', [TaskController::class, 'updatePositions'])->name('updatePositions');
         // プロジェクト進捗サマリー取得
         Route::get('/summary', [TaskController::class, 'getProjectSummary'])->name('summary');
+    });
+
+    // 通知 (Notifications)
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::get('/count', [NotificationController::class, 'count'])->name('count');
+        Route::post('/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
     });
 
     // 管理者専用エリア

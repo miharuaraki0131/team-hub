@@ -19,6 +19,7 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+    @routes
 
 </head>
 
@@ -118,6 +119,7 @@
 
     {{-- ページ固有のJavaScriptを読み込むための場所 --}}
     @stack('scripts')
+
 </body>
 
 </html>

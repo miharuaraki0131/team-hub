@@ -8,6 +8,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string|null $logo_path
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read string|null $logo_url
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\NotificationDestination> $notificationDestinations
+ * @property-read int|null $notification_destinations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
+ * @method static \Database\Factories\DivisionFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division whereLogoPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Division withoutTrashed()
+ * @mixin \Eloquent
+ */
 class Division extends Model
 {
     use HasFactory, SoftDeletes;

@@ -9,6 +9,71 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
+/**
+ * @property int $id
+ * @property int $project_id
+ * @property int|null $user_id
+ * @property int|null $parent_id
+ * @property string $title タスクタイトル
+ * @property string|null $description タスク説明
+ * @property string $status タスクステータス
+ * @property \Illuminate\Support\Carbon|null $planned_start_date 予定開始日
+ * @property \Illuminate\Support\Carbon|null $planned_end_date 予定終了日
+ * @property \Illuminate\Support\Carbon|null $actual_start_date 実際の開始日
+ * @property \Illuminate\Support\Carbon|null $actual_end_date 実際の終了日
+ * @property numeric|null $planned_effort 予定工数 (例: 999.99時間まで対応)
+ * @property numeric|null $actual_effort 実際の工数 (例: 999.99時間まで対応)
+ * @property int $position タスクの表示順序
+ * @property int $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Task> $children
+ * @property-read int|null $children_count
+ * @property-read \App\Models\User $createdBy
+ * @property-read int|null $actual_duration
+ * @property-read bool $is_critical
+ * @property-read bool $is_delayed
+ * @property-read int|null $planned_duration
+ * @property-read float $progress_percentage
+ * @property-read string $status_class
+ * @property-read string $status_label
+ * @property-read string $wbs_number
+ * @property-read Task|null $parent
+ * @property-read \App\Models\Project $project
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task assignedTo($userId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task byStatus($status)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task childTasks()
+ * @method static \Database\Factories\TaskFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task parentTasks()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task upcoming($days = 7)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereActualEffort($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereActualEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereActualStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task wherePlannedEffort($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task wherePlannedEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task wherePlannedStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task wherePosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereProjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Task withoutTrashed()
+ * @mixin \Eloquent
+ */
 class Task extends Model
 {
     use HasFactory, SoftDeletes;

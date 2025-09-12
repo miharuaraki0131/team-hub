@@ -10,6 +10,7 @@ Alpine.start();
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import './notification.js';
 
 // [重要] Bladeテンプレートの中から、いつでも呼び出せるように、グローバルな魔法として登録する
 window.FullCalendar = {

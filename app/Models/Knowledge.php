@@ -9,6 +9,46 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string $title タイトル
+ * @property string $body 内容
+ * @property bool $is_pinned ピン留め
+ * @property \Illuminate\Support\Carbon|null $published_at 公開日時
+ * @property \Illuminate\Support\Carbon|null $expired_at 期限日時
+ * @property string|null $category カテゴリー
+ * @property int $view_count
+ * @property string $priority
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge byPriority()
+ * @method static \Database\Factories\KnowledgeFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge pinned()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge published()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereExpiredAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereIsPinned($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge wherePriority($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge wherePublishedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge whereViewCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Knowledge withoutTrashed()
+ * @mixin \Eloquent
+ */
 class Knowledge extends Model
 {
     use HasFactory, SoftDeletes;

@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Events\TaskAssigned;
 
 class TaskController extends Controller
 {
@@ -69,8 +70,12 @@ class TaskController extends Controller
             'created_by' => Auth::id(),
         ]);
 
+        // ★★★ タスク保存後、イベントを発行！ ★★★
+        TaskAssigned::dispatch($task);
+
         // 作成したタスクをユーザー情報と一緒に返す
         $task->load('user');
+
 
         return response()->json([
             'success' => true,
@@ -129,8 +134,15 @@ class TaskController extends Controller
             $validated['status'] = 'done';
         }
 
+        $originalUserId = $task->user_id; // 更新前の担当者IDを保持
+
         $task->update($validated);
         $task->load('user');
+
+        // 担当者が変更された場合、イベントを発行して通知を送る
+        if ($task->user_id !== $originalUserId) {
+            TaskAssigned::dispatch($task);
+        }
 
         return response()->json([
             'success' => true,
