@@ -47,7 +47,7 @@
         {{-- =============================================== --}}
         {{-- メインコンテンツ：ここがページ毎に差し変わる！ --}}
         {{-- =============================================== --}}
-        <main class="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 flex-grow flex flex-col">
+        <main class="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 flex-grow">
             {{ $slot }}
         </main>
 

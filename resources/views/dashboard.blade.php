@@ -316,9 +316,9 @@
                         <p class="text-sm text-gray-600 mt-2">同じ部署のメンバーの今日の活動状況</p>
                     </div>
 
-                    <div class="divide-y divide-gray-100">
+                    <div class="divide-y divide-gray-100 ">
                         @forelse ($teamMembers as $member)
-                            <div class="p-4 flex justify-between items-center">
+                            <div class="p-4 m-1 flex justify-between items-center">
                                 {{-- メンバー名 --}}
                                 <span class="font-bold text-gray-800">{{ $member->name }}</span>
 

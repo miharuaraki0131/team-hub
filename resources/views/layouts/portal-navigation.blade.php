@@ -36,8 +36,8 @@
                 <div class="hidden sm:flex sm:items-center sm:ml-6">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center text-gray-800 font-medium hover:text-gray-800/80 transition-colors">
-                                <span class="hidden sm:inline">⚙️ 管理</span>
+                            <button class="relative p-2 rounded-full hover:bg-slate-200 transition-colors"> <span
+                                    class="hidden sm:inline text-gray-800 font-bold">⚙️ 管理</span>
                             </button>
                         </x-slot>
                         <x-slot name="content">
