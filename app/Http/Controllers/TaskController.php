@@ -8,7 +8,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Events\TaskAssigned;
+use App\Events\TaskAssigned as TaskAssignedEvent; // アプリ内通知イベント
+use App\Notifications\TaskAssigned as TaskAssignedNotification; // ★メール通知クラス
+use Illuminate\Support\Facades\Notification; // ★Notificationファサード
+use Illuminate\Support\Facades\Log; // ★Logファサード
 
 class TaskController extends Controller
 {
@@ -70,8 +73,24 @@ class TaskController extends Controller
             'created_by' => Auth::id(),
         ]);
 
-        // ★★★ タスク保存後、イベントを発行！ ★★★
-        TaskAssigned::dispatch($task);
+        // --- ★★★ 通知処理（アプリ内通知 + メール通知）★★★ ---
+        try {
+            // タスクに担当者が設定されている場合のみ通知を送信
+            if ($task->user_id) {
+                // 1. アプリ内通知用のイベントを発行
+                TaskAssignedEvent::dispatch($task);
+
+                // 2. メール通知を送信
+                $assignee = User::find($task->user_id);
+                if ($assignee) {
+                    Notification::send($assignee, new TaskAssignedNotification($task));
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('タスク割り当て通知の送信に失敗しました (store): ' . $e->getMessage());
+        }
+        // --- ★★★ 通知処理ここまで ★★★
+
 
         // 作成したタスクをユーザー情報と一緒に返す
         $task->load('user');
@@ -139,9 +158,20 @@ class TaskController extends Controller
         $task->update($validated);
         $task->load('user');
 
-        // 担当者が変更された場合、イベントを発行して通知を送る
-        if ($task->user_id !== $originalUserId) {
-            TaskAssigned::dispatch($task);
+        try {
+            // 担当者が「新しく設定された」または「変更された」場合のみ通知
+            if ($task->user_id && $task->user_id !== $originalUserId) {
+                // 1. アプリ内通知用のイベントを発行
+                TaskAssignedEvent::dispatch($task);
+
+                // 2. メール通知を送信
+                $assignee = User::find($task->user_id);
+                if ($assignee) {
+                    Notification::send($assignee, new TaskAssignedNotification($task));
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('タスク割り当て通知の送信に失敗しました (update): ' . $e->getMessage());
         }
 
         return response()->json([
