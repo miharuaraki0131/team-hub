@@ -346,4 +346,62 @@ class TaskController extends Controller
             'message' => 'タスクを一括更新しました'
         ]);
     }
+
+    /**
+     * カンバンボード用のタスクデータを取得
+     */
+    public function getAllTasksForKanban(Project $project)
+    {
+        try {
+            $tasks = Task::where('project_id', $project->id)
+                ->with(['user'])
+                ->get()
+                ->map(function ($task) {
+                    return [
+                        'id' => $task->id,
+                        'title' => $task->title,
+                        'status' => $task->status,
+                        'planned_end_date' => $task->planned_end_date?->format('Y-m-d'),
+                        'user' => $task->user ? [
+                            'name' => $task->user->name,
+                            'avatar_url' => $task->user->avatar_path
+                                ? asset('storage/' . $task->user->avatar_path)
+                                : asset('images/default-avatar.png')
+                        ] : null
+                    ];
+                });
+
+            return response()->json($tasks);
+        } catch (\Exception $e) {
+            \Log::error('Kanban data fetch error: ' . $e->getMessage());
+            return response()->json(['error' => 'データの取得に失敗しました'], 500);
+        }
+    }
+
+    /**
+     * プロジェクト進捗サマリー取得（ダッシュボード用）
+     */
+    public function summary(Project $project)
+    {
+        try {
+            $tasks = Task::where('project_id', $project->id)->get();
+
+            $totalTasks = $tasks->count();
+            $completedTasks = $tasks->where('status', 'done')->count();
+            $inProgressTasks = $tasks->where('status', 'in_progress')->count();
+            $progressPercentage = $totalTasks > 0
+                ? round(($completedTasks / $totalTasks) * 100, 1)
+                : 0;
+
+            return response()->json([
+                'total_tasks' => $totalTasks,
+                'completed_tasks' => $completedTasks,
+                'in_progress_tasks' => $inProgressTasks,
+                'progress_percentage' => $progressPercentage
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Summary data fetch error: ' . $e->getMessage());
+            return response()->json(['error' => 'サマリーデータの取得に失敗しました'], 500);
+        }
+    }
 }

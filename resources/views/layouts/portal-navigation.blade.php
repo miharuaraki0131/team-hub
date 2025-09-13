@@ -38,10 +38,18 @@
                 <!-- 通知ドロップダウン (最初は非表示) -->
                 <div id="notification-dropdown"
                     class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50 hidden">
-                    <div class="p-4 border-b font-bold text-gray-700">通知</div>
+                    <div class="p-4 border-b font-bold text-gray-700 flex justify-between items-center">
+                        <span>通知</span>
+                    </div>
                     <div id="notification-list" class="max-h-96 overflow-y-auto">
                         <!-- ここにJavaScriptで通知リストが挿入される -->
                         <div class="p-4 text-center text-gray-500">読み込み中...</div>
+                    </div>
+
+                    <div class="p-2 bg-gray-50 border-t text-center">
+                        <a href="{{ route('notifications.page') }}" class="text-sm font-bold text-blue-600 hover:underline">
+                            全ての通知を見る
+                        </a>
                     </div>
                 </div>
 
@@ -73,9 +81,9 @@
             <div class="relative ml-3" x-data="{ open: false }">
                 <button @click="open = !open"
                     class="flex items-center gap-2 text-gray-800 font-medium hover:text-gray-800/80 transition-colors">
-                    <img src="{{ Auth::user()->avatar_path ? asset('storage/' . Auth::user()->avatar_path) : asset('images/default-avatar.png') }}" alt="User Avatar"
-                        class="h-8 w-8 rounded-full object-cover">
-                        <span class="hidden sm:inline">ようこそ、{{ Auth::user()->name }} さん</span>
+                    <img src="{{ Auth::user()->avatar_path ? asset('storage/' . Auth::user()->avatar_path) : asset('images/default-avatar.png') }}"
+                        alt="User Avatar" class="h-8 w-8 rounded-full object-cover">
+                    <span class="hidden sm:inline">ようこそ、{{ Auth::user()->name }} さん</span>
                     <span class="sm:hidden">{{ Auth::user()->name }}</span>
                     <svg class="h-5 w-5 transition-transform duration-200" :class="{ 'rotate-180': open }"
                         fill="currentColor" viewBox="0 0 20 20">

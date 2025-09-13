@@ -38,4 +38,22 @@ class NotificationController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+
+
+    // ▼▼▼ この新しいメソッドを追加 ▼▼▼
+    /**
+     * 通知一覧ページを表示する
+     */
+    public function showNotificationsPage()
+    {
+        // ログインユーザーの全ての通知を、新しい順にページネーションで取得
+        $notifications = Auth::user()->notifications()->latest()->paginate(15);
+
+        // 未読通知を全て既読にする（ページを開いた時点で既読とみなす）
+        Auth::user()->unreadNotifications()->update(['read_at' => now()]);
+
+        return view('notifications.index', compact('notifications'));
+    }
+
 }

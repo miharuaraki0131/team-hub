@@ -72,17 +72,20 @@ Route::middleware('auth')->group(function () {
     Route::prefix('projects/{project}')->name('tasks.')->group(function () {
         // WBS/ガントチャート表示
         Route::get('/tasks', [TaskController::class, 'index'])->name('index');
-        // ガントチャート用のJSONデータ取得
+
+        // API エンドポイント群
         Route::get('/gantt-data', [TaskController::class, 'getGanttData'])->name('ganttData');
+        Route::get('/kanban-data', [TaskController::class, 'getAllTasksForKanban'])->name('kanbanData');
+        Route::get('/summary', [TaskController::class, 'summary'])->name('summary');
+
         // タスクのCRUD操作（JSON API）
         Route::post('/tasks', [TaskController::class, 'store'])->name('store');
         Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('show');
         Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('update');
         Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('destroy');
-        // タスクの並び順一括更新
+
+        // その他の操作
         Route::put('/tasks-positions', [TaskController::class, 'updatePositions'])->name('updatePositions');
-        // プロジェクト進捗サマリー取得
-        Route::get('/summary', [TaskController::class, 'getProjectSummary'])->name('summary');
     });
 
     // 通知 (Notifications)
@@ -91,6 +94,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/count', [NotificationController::class, 'count'])->name('count');
         Route::post('/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
     });
+
+    Route::get('/notifications-page', [NotificationController::class, 'showNotificationsPage'])->name('notifications.page');
 
     // 管理者専用エリア
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {

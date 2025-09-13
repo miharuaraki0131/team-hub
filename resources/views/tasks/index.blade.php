@@ -25,6 +25,18 @@
                             </svg>
                             WBS表示
                         </button>
+
+                        {{-- カンバンボタン --}}
+                        <button id="kanban-view-btn"
+                            class="bg-transparent text-gray-600 hover:bg-gray-100 px-4 py-2 rounded-md transition text-sm font-bold flex flex-col items-center justify-center h-full">
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2">
+                                </path>
+                            </svg>
+                            カンバン表示
+                        </button>
+
                         {{-- ガントボタン：最初から非アクティブなクラスを追加 --}}
                         <button id="gantt-view-btn"
                             class="bg-transparent text-gray-600 hover:bg-gray-100 px-4 py-2 rounded-md transition text-sm font-bold flex flex-col items-center justify-center h-full">
@@ -251,6 +263,48 @@
                     </div>
                 </div>
 
+                {{--  カンバン表示エリア --}}
+                <div id="kanban-container" class="bg-gray-100 flex-grow p-4 overflow-x-auto min-h-[400px]"
+                    style="display: none;">
+                    {{-- カンバンボード本体 (横スクロール) --}}
+                    <div class="flex gap-4 h-full">
+
+                        {{-- ToDo (未着手) カラム --}}
+                        <div class="flex-1 bg-gray-200 rounded-lg shadow-md flex flex-col">
+                            <div class="p-3 bg-gray-300 rounded-t-lg flex-shrink-0">
+                                <h3 class="font-bold text-gray-800">📝 ToDo (未着手)</h3>
+                            </div>
+                            {{-- ▼▼▼ data-status="todo" を追加 ▼▼▼ --}}
+                            <div class="p-2 space-y-2 overflow-y-auto flex-grow" data-status="todo">
+                                <div class="p-4 text-center text-gray-500">（タスクはありません）</div>
+                            </div>
+                        </div>
+
+                        {{-- In Progress (進行中) カラム --}}
+                        <div class="flex-1 bg-gray-200 rounded-lg shadow-md flex flex-col">
+                            <div class="p-3 bg-yellow-300 rounded-t-lg flex-shrink-0">
+                                <h3 class="font-bold text-yellow-800">🏃 In Progress (進行中)</h3>
+                            </div>
+                            {{-- ▼▼▼ data-status="in_progress" を追加 ▼▼▼ --}}
+                            <div class="p-2 space-y-2 overflow-y-auto flex-grow" data-status="in_progress">
+                                {{-- JSで追加される --}}
+                            </div>
+                        </div>
+
+                        {{-- Done (完了) カラム --}}
+                        <div class="flex-1 bg-gray-200 rounded-lg shadow-md flex flex-col">
+                            <div class="p-3 bg-green-300 rounded-t-lg flex-shrink-0">
+                                <h3 class="font-bold text-green-800">✅ Done (完了)</h3>
+                            </div>
+                            {{-- ▼▼▼ data-status="done" を追加 ▼▼▼ --}}
+                            <div class="p-2 space-y-2 overflow-y-auto flex-grow" data-status="done">
+                                {{-- JSで追加される --}}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
                 {{-- ガントチャート表示エリア（初期は非表示） --}}
                 <div id="gantt-container" class="bg-white flex-grow relative min-h-[400px]" style="display: none;">
 
@@ -400,15 +454,13 @@
 
                 // --- グローバル変数 ---
                 const projectId = {{ $project->id }};
-                let ganttInstance = null; // ガントチャートのインスタンスを保持する変数
+                let ganttInstance = null; // ガントチャートのインスタンス
+                let kanbanInitialized = false; // カンバンボードが初期化済みかどうかのフラグ
 
                 // --- 初期化処理 ---
-                // ページの読み込みが完了したら、全ての処理を開始
                 document.addEventListener('DOMContentLoaded', function() {
-                    // dhtmlx-ganttライブラリが読み込まれているかを確認
                     if (typeof gantt === 'undefined') {
                         console.error('dhtmlx-gantt is not loaded!');
-                        // エラーメッセージをユーザーに表示するなどのフォールバック処理
                         const ganttContainer = document.getElementById('gantt-container');
                         if (ganttContainer) {
                             ganttContainer.innerHTML =
@@ -416,7 +468,6 @@
                         }
                         return;
                     }
-                    // 全てのイベントリスナーを初期化
                     initializeEventListeners();
                 });
 
@@ -424,6 +475,7 @@
                 function initializeEventListeners() {
                     // 表示切り替えボタン
                     document.getElementById('wbs-view-btn').addEventListener('click', () => switchView('wbs'));
+                    document.getElementById('kanban-view-btn').addEventListener('click', () => switchView('kanban'));
                     document.getElementById('gantt-view-btn').addEventListener('click', () => switchView('gantt'));
 
                     // 新規タスク作成ボタン
@@ -461,72 +513,207 @@
 
                     // ガントチャートのズームボタン
                     document.getElementById('gantt-zoom-in').addEventListener('click', () => ganttInstance?.ext.zoom
-                        .zoomIn());
+                    .zoomIn());
                     document.getElementById('gantt-zoom-out').addEventListener('click', () => ganttInstance?.ext.zoom
                         .zoomOut());
-
-                    // リサイズイベントでガントチャートを再描画
-                    window.addEventListener('resize', function() {
-                        if (ganttInstance && document.getElementById('gantt-container').style.display !== 'none') {
-                            setTimeout(() => {
-                                ganttInstance.render();
-                            }, 100);
-                        }
-                    });
                 }
 
-                // --- UI制御に関する関数 ---
-
-                // WBSの展開・折りたたみ
-                function toggleTaskExpansion(button) {
-                    const taskId = button.dataset.taskId;
-                    const childRows = document.querySelectorAll(`tr[data-parent-id="${taskId}"]`);
-                    const icon = button.querySelector('.expand-icon');
-                    const isCollapsed = icon.textContent === '▶';
-
-                    childRows.forEach(row => row.classList.toggle('hidden', !isCollapsed));
-                    icon.textContent = isCollapsed ? '▼' : '▶';
-                }
-
-                // 表示モードの切り替え (WBS / Gantt) - 修正版
+                /**
+                 * ==================================
+                 * 表示モードの切り替え
+                 * ==================================
+                 */
                 function switchView(view) {
                     const wbsContainer = document.getElementById('wbs-container');
+                    const kanbanContainer = document.getElementById('kanban-container');
                     const ganttContainer = document.getElementById('gantt-container');
                     const wbsBtn = document.getElementById('wbs-view-btn');
+                    const kanbanBtn = document.getElementById('kanban-view-btn');
                     const ganttBtn = document.getElementById('gantt-view-btn');
 
-                    // ▼▼▼ このブロックを修正 ▼▼▼
                     const isWbs = view === 'wbs';
+                    const isKanban = view === 'kanban';
+                    const isGantt = view === 'gantt';
 
-                    // Tailwind CSSのクラス名を定義
                     const activeClasses = 'bg-blue-500 text-white';
                     const inactiveClasses = 'bg-transparent text-gray-600 hover:bg-gray-100';
                     const baseClasses =
                         'px-4 py-2 rounded-md transition text-sm font-bold flex flex-col items-center justify-center h-full';
 
-                    // display プロパティで表示/非表示を制御
                     wbsContainer.style.display = isWbs ? 'block' : 'none';
-                    ganttContainer.style.display = isWbs ? 'none' : 'block';
+                    kanbanContainer.style.display = isKanban ? 'block' : 'none';
+                    ganttContainer.style.display = isGantt ? 'block' : 'none';
 
-                    // ボタンのスタイル更新
                     wbsBtn.className = `${baseClasses} ${isWbs ? activeClasses : inactiveClasses}`;
-                    ganttBtn.className = `${baseClasses} ${!isWbs ? activeClasses : inactiveClasses}`;
-                    // ▲▲▲ 修正ブロックここまで ▲▲▲
+                    kanbanBtn.className = `${baseClasses} ${isKanban ? activeClasses : inactiveClasses}`;
+                    ganttBtn.className = `${baseClasses} ${isGantt ? activeClasses : inactiveClasses}`;
 
-                    // ガント表示時のレンダリング
-                    if (!isWbs) {
+                    if (isKanban) {
+                        initializeKanbanBoard();
+                        renderKanbanTasks();
+                    }
+
+                    if (isGantt) {
                         if (!ganttInstance) {
-                            setTimeout(() => {
-                                renderGanttChart();
-                            }, 150);
+                            setTimeout(() => renderGanttChart(), 150);
                         } else {
                             ganttInstance.render();
                         }
                     }
                 }
 
-                // --- モーダル関連の関数 ---
+                /**
+                 * ==================================
+                 * カンバンボード関連の関数
+                 * ==================================
+                 */
 
+                function initializeKanbanBoard() {
+                    if (kanbanInitialized) return;
+
+                    const todoColumn = document.querySelector('#kanban-container div[data-status="todo"]');
+                    const inProgressColumn = document.querySelector('#kanban-container div[data-status="in_progress"]');
+                    const doneColumn = document.querySelector('#kanban-container div[data-status="done"]');
+
+                    const columns = [todoColumn, inProgressColumn, doneColumn];
+                    columns.forEach(column => {
+                        new window.Sortable(column, {
+                            group: 'shared',
+                            animation: 150,
+                            ghostClass: 'opacity-50',
+                            onEnd: function(evt) {
+                                const taskId = evt.item.dataset.taskId;
+                                const newStatus = evt.to.dataset.status;
+                                updateTaskStatus(taskId, newStatus);
+                            }
+                        });
+                    });
+                    kanbanInitialized = true;
+                }
+
+                async function renderKanbanTasks() {
+                    const tasks = await fetchAllTasksForKanban();
+                    if (tasks === null) return;
+
+                    const todoColumn = document.querySelector('#kanban-container div[data-status="todo"]');
+                    const inProgressColumn = document.querySelector('#kanban-container div[data-status="in_progress"]');
+                    const doneColumn = document.querySelector('#kanban-container div[data-status="done"]');
+
+                    todoColumn.innerHTML = '';
+                    inProgressColumn.innerHTML = '';
+                    doneColumn.innerHTML = '';
+
+                    const todoTasks = tasks.filter(t => t.status === 'todo' || t.status === null);
+                    const inProgressTasks = tasks.filter(t => t.status === 'in_progress');
+                    const doneTasks = tasks.filter(t => t.status === 'done');
+
+                    if (todoTasks.length > 0) {
+                        todoTasks.forEach(task => todoColumn.appendChild(createTaskCard(task)));
+                    } else {
+                        todoColumn.innerHTML = '<div class="p-4 text-center text-gray-500">（タスクはありません）</div>';
+                    }
+                    if (inProgressTasks.length > 0) {
+                        inProgressTasks.forEach(task => inProgressColumn.appendChild(createTaskCard(task)));
+                    }
+                    if (doneTasks.length > 0) {
+                        doneTasks.forEach(task => doneColumn.appendChild(createTaskCard(task)));
+                    }
+                }
+
+                async function fetchAllTasksForKanban() {
+                    try {
+                        const response = await fetch('{{ route('tasks.kanbanData', $project) }}');
+                        if (!response.ok) throw new Error(`タスクデータの取得に失敗しました (Status: ${response.status})`);
+                        return await response.json();
+                    } catch (error) {
+                        console.error(error);
+                        alert(error.message);
+                        return null;
+                    }
+                }
+
+                function createTaskCard(task) {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-3 rounded-md shadow cursor-pointer border-l-4 border-blue-500';
+                    card.dataset.taskId = task.id;
+
+                    let userAvatar = '';
+                    if (task.user && task.user.avatar_url) {
+                        userAvatar =
+                            `<img src="${task.user.avatar_url}" alt="${task.user.name}" class="w-6 h-6 rounded-full ml-auto">`;
+                    }
+
+                    let dueDate = '';
+                    if (task.planned_end_date) {
+                        dueDate = '期限: ' + task.planned_end_date.split('T')[0];
+                    }
+
+                    card.innerHTML = `
+                        <p class="font-bold text-sm text-gray-800">${task.title}</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-gray-500">${dueDate}</span>
+                            ${userAvatar}
+                        </div>
+                    `;
+                    card.addEventListener('click', () => editTask(task.id));
+                    return card;
+                }
+
+                async function updateTaskStatus(taskId, newStatus) {
+                    try {
+                        const response = await fetch(`/projects/${projectId}/tasks/${taskId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    'content'),
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                status: newStatus
+                            })
+                        });
+                        if (!response.ok) throw new Error('ステータスの更新に失敗しました');
+                        updateSummary();
+                    } catch (error) {
+                        console.error(error);
+                        alert(error.message);
+                        location.reload();
+                    }
+                }
+
+                async function updateSummary() {
+                    try {
+                        const response = await fetch('{{ route('tasks.summary', $project) }}');
+                        const summary = await response.json();
+                        document.getElementById('total-tasks').textContent = summary.total_tasks;
+                        document.getElementById('completed-tasks').textContent = summary.completed_tasks;
+                        document.getElementById('in-progress-tasks').textContent = summary.in_progress_tasks;
+                        document.getElementById('progress-percentage').textContent = summary.progress_percentage + '%';
+                    } catch (error) {
+                        console.error('Failed to update summary:', error);
+                    }
+                }
+
+                /**
+                 * ==================================
+                 * WBS関連の関数
+                 * ==================================
+                 */
+                function toggleTaskExpansion(button) {
+                    const taskId = button.dataset.taskId;
+                    const childRows = document.querySelectorAll(`tr[data-parent-id="${taskId}"]`);
+                    const icon = button.querySelector('.expand-icon');
+
+                    childRows.forEach(row => row.classList.toggle('hidden'));
+                    icon.textContent = icon.textContent === '▶' ? '▼' : '▶';
+                }
+
+                /**
+                 * ==================================
+                 * モーダル関連の関数 (WBSとカンバンで共通)
+                 * ==================================
+                 */
                 function openTaskModal(taskId = null, parentId = null) {
                     const modal = document.getElementById('task-modal');
                     const title = document.getElementById('modal-title');
@@ -558,18 +745,10 @@
 
                 async function fetchTaskData(taskId) {
                     try {
-                        // 個別タスク取得APIを叩く
-                        const response = await fetch(`/projects/${projectId}/tasks/${taskId}`, {
-                            headers: {
-                                'Accept': 'application/json'
-                            }
-                        });
-
+                        const response = await fetch(`/projects/${projectId}/tasks/${taskId}`);
                         if (!response.ok) throw new Error('Network response was not ok');
-
                         const task = await response.json();
 
-                        // フォームに値をセット
                         document.getElementById('title').value = task.title || '';
                         document.getElementById('description').value = task.description || '';
                         document.getElementById('user_id').value = task.user_id || '';
@@ -589,7 +768,6 @@
                         alert('タスクデータの取得に失敗しました');
                     }
                 }
-
 
                 async function handleTaskSubmit(e) {
                     e.preventDefault();
@@ -619,7 +797,7 @@
 
                         if (response.ok && result.success) {
                             closeTaskModal();
-                            location.reload();
+                            location.reload(); // 成功したらリロードして全体を更新
                         } else {
                             let errorMessage = result.message || 'エラーが発生しました';
                             if (result.errors) {
@@ -662,6 +840,8 @@
                         alert('タスクの削除に失敗しました');
                     }
                 }
+
+
 
                 // --- ガントチャート関連の関数 ---
 
@@ -953,6 +1133,150 @@
                     } catch (error) {
                         console.error("Gantt Error:", error);
                         chartContainer.innerHTML = '<div class="p-8 text-center text-red-500">ガントチャートの表示に失敗しました。</div>';
+                    }
+                }
+
+                /**
+                 * ==================================
+                 * カンバンボード関連の関数
+                 * ==================================
+                 */
+                function initializeKanbanBoard() {
+                    // すでに初期化済みの場合は何もしない
+                    if (kanbanInitialized) return;
+
+                    const todoColumn = document.querySelector('#kanban-container .bg-gray-300 + .p-2');
+                    const inProgressColumn = document.querySelector('#kanban-container .bg-yellow-300 + .p-2');
+                    const doneColumn = document.querySelector('#kanban-container .bg-green-300 + .p-2');
+
+                    const columns = [todoColumn, inProgressColumn, doneColumn];
+                    columns.forEach(column => {
+                        new window.Sortable(column, {
+                            group: 'shared',
+                            animation: 150,
+                            ghostClass: 'opacity-50',
+                            onEnd: function(evt) {
+                                const taskId = evt.item.dataset.taskId;
+                                const newStatus = findStatusForColumn(evt.to);
+                                updateTaskStatus(taskId, newStatus);
+                            }
+                        });
+                    });
+
+                    kanbanInitialized = true; // 初期化フラグを立てる
+                    console.log('Kanban board initialized.'); // 初期化されたかログで確認
+                }
+
+                async function renderKanbanTasks() {
+                    console.log('Start rendering kanban tasks...'); // 実行されたかログで確認
+
+                    const tasks = await fetchAllTasks();
+                    if (!tasks) {
+                        console.error('Failed to fetch tasks for kanban.');
+                        return;
+                    }
+
+                    const todoColumn = document.querySelector('#kanban-container .bg-gray-300 + .p-2');
+                    const inProgressColumn = document.querySelector('#kanban-container .bg-yellow-300 + .p-2');
+                    const doneColumn = document.querySelector('#kanban-container .bg-green-300 + .p-2');
+
+                    // 一旦コンテナを空にする
+                    todoColumn.innerHTML = '';
+                    inProgressColumn.innerHTML = '';
+                    doneColumn.innerHTML = '';
+
+                    // タスクを分類
+                    const todoTasks = tasks.filter(t => t.status === 'todo' || t.status === null);
+                    const inProgressTasks = tasks.filter(t => t.status === 'in_progress');
+                    const doneTasks = tasks.filter(t => t.status === 'done');
+
+                    // 各カラムにタスクを描画
+                    if (todoTasks.length > 0) {
+                        todoTasks.forEach(task => todoColumn.appendChild(createTaskCard(task)));
+                    } else {
+                        todoColumn.innerHTML = '<div class="p-4 text-center text-gray-500">（タスクはありません）</div>';
+                    }
+
+                    if (inProgressTasks.length > 0) {
+                        inProgressTasks.forEach(task => inProgressColumn.appendChild(createTaskCard(task)));
+                    }
+
+                    if (doneTasks.length > 0) {
+                        doneTasks.forEach(task => doneColumn.appendChild(createTaskCard(task)));
+                    }
+
+                    console.log('Finished rendering kanban tasks.');
+                }
+
+                // 全タスクを取得するAPIを叩くヘルパー関数
+                async function fetchAllTasks() {
+                    try {
+                        // WBSのデータを流用。もし専用APIを作るならURLを変更。
+                        const response = await fetch('{{ route('tasks.kanbanData', $project) }}');
+                        if (!response.ok) throw new Error('タスクデータの取得に失敗しました');
+                        const data = await response.json();
+                        return data;
+                    } catch (error) {
+                        console.error(error);
+                        alert(error.message);
+                        return null;
+                    }
+                }
+
+                // タスクカードのHTMLを生成する関数
+                function createTaskCard(task) {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-3 rounded-md shadow cursor-pointer border-l-4 border-blue-500';
+                    card.dataset.taskId = task.id; // data属性としてタスクIDを保持
+
+                    let userAvatar = task.user ?
+                        `<img src="${task.user.avatar_path ? '/storage/' + task.user.avatar_path : '/images/default-avatar.png'}" class="w-6 h-6 rounded-full ml-auto">` :
+                        '';
+
+                    card.innerHTML = `
+                        <p class="font-bold text-sm text-gray-800">${task.title}</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-gray-500">${task.planned_end_date ? '期限: ' + task.planned_end_date : ''}</span>
+                            ${userAvatar}
+                        </div>
+                    `;
+                    // カードがクリックされたら、編集モーダルを開く
+                    card.addEventListener('click', () => editTask(task.id));
+                    return card;
+                }
+
+                // ドロップされたカラムからstatusを判定するヘルパー関数
+                function findStatusForColumn(columnEl) {
+                    if (columnEl.previousElementSibling.classList.contains('bg-yellow-300')) return 'in_progress';
+                    if (columnEl.previousElementSibling.classList.contains('bg-green-300')) return 'done';
+                    return 'todo';
+                }
+
+                // タスクのステータスを更新するAPIを叩く関数
+                async function updateTaskStatus(taskId, newStatus) {
+                    try {
+                        const response = await fetch(`/projects/${projectId}/tasks/${taskId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    'content'),
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                status: newStatus
+                            })
+                        });
+                        if (!response.ok) throw new Error('ステータスの更新に失敗しました');
+
+                        // location.reload(); // 成功したらリロード（シンプルだがちらつく）
+                        console.log(`Task ${taskId} status updated to ${newStatus}`);
+
+                    } catch (error) {
+                        console.error(error);
+                        alert(error.message);
+                        // エラーが起きたら画面をリロードして元の状態に戻す
+                        location.reload();
                     }
                 }
 

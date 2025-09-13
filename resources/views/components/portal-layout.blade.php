@@ -68,28 +68,30 @@
                 <span class="text-xs mt-1">ホーム</span>
             </a>
 
-            {{-- 備品一覧 --}}
-            <a href="#"
+            {{-- プロジェクト一覧 --}}
+            <a href="{{ route('projects.index') }}"
                 class="flex flex-col items-center p-2 text-[var(--text-light)] hover:text-[var(--primary-color)] transition-colors">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
-                <span class="text-xs mt-1">検索</span>
-            </a>
-
-            {{-- 予約管理 --}}
-            <a href="#"
-                class="flex flex-col items-center p-2 text-[var(--text-light)] hover:text-[var(--primary-color)] transition-colors">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    <path
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                         stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                <span class="text-xs mt-1">予約</span>
+                <span class="text-xs mt-1">プロジェクト</span>
+            </a>
+
+            {{-- 共有事項 --}}
+            <a href="{{ route('knowledges.index') }}"
+                class="flex flex-col items-center p-2 text-[var(--text-light)] hover:text-[var(--primary-color)] transition-colors">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span class="text-xs mt-1">共有事項</span>
             </a>
 
             {{-- 通知 --}}
-            <a href="#"
+            <a href="{{ route('notifications.page') }}"
                 class="flex flex-col items-center p-2 text-[var(--text-light)] hover:text-[var(--primary-color)] transition-colors relative">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path
@@ -97,9 +99,9 @@
                         stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
                 <span class="text-xs mt-1">通知</span>
-                {{-- 通知バッジ --}}
-                <span
-                    class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                {{-- 通知バッジ（動的に表示） --}}
+                <span id="mobile-notification-badge"
+                    class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
             </a>
 
             {{-- プロフィール --}}

@@ -22,6 +22,7 @@
         "@fullcalendar/core": "^6.1.19",
         "@fullcalendar/daygrid": "^6.1.19",
         "@fullcalendar/interaction": "^6.1.19",
+        "sortablejs": "^1.15.6",
         "ziggy-js": "^2.5.3"
     }
 }

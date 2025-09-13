@@ -11,6 +11,7 @@ import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import './notification.js';
+import Sortable from 'sortablejs';
 
 // [重要] Bladeテンプレートの中から、いつでも呼び出せるように、グローバルな魔法として登録する
 window.FullCalendar = {
@@ -18,3 +19,5 @@ window.FullCalendar = {
     dayGridPlugin,
     interactionPlugin
 };
+
+window.Sortable = Sortable;
