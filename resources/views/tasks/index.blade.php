@@ -1,36 +1,52 @@
 <x-portal-layout>
-    {{-- [修正] flex と h-full を使って、このコンポーネント自体が親の高さ一杯に広がるようにする --}}
     <div class="flex flex-col h-full bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
 
-        {{-- ヘッダー (高さは固定) --}}
         <div class="bg-slate-100 border-b-2 border-gray-200 p-6 flex-shrink-0">
-            <div class="flex justify-between items-center">
-                <div>
+            <div class="flex justify-between items-start">
+
+                {{-- 左側：タイトルと説明 (幅 2/3) --}}
+                <div class="w-2/3">
                     <h1 class="text-3xl font-bold text-gray-800">
                         📊 {{ $project->name }} - WBS/ガントチャート
                     </h1>
                     <p class="text-gray-600 mt-1">{{ $project->description }}</p>
                 </div>
-                <div class="flex gap-3">
+
+                {{-- 右側：ボタン群 (幅 1/3) --}}
+                <div class="w-1/3 flex justify-end gap-3">
                     {{-- 表示切り替えボタン --}}
-                    <div class="bg-white rounded-lg border border-gray-300 p-1">
-                        <button id="wbs-view-btn" class="px-4 py-2 rounded-md bg-blue-500 text-white transition">
-                            📋 WBS表示
+                    <div class="bg-white rounded-lg border border-gray-300 p-1 flex items-center">
+                        {{-- WBSボタン：最初からアクティブなクラスを追加 --}}
+                        <button id="wbs-view-btn"
+                            class="bg-blue-500 text-white px-4 py-2 rounded-md transition text-sm font-bold flex flex-col items-center justify-center h-full">
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                            WBS表示
                         </button>
-                        <button id="gantt-view-btn" class="px-4 py-2 rounded-md hover:bg-gray-100 transition">
-                            📈 ガント表示
+                        {{-- ガントボタン：最初から非アクティブなクラスを追加 --}}
+                        <button id="gantt-view-btn"
+                            class="bg-transparent text-gray-600 hover:bg-gray-100 px-4 py-2 rounded-md transition text-sm font-bold flex flex-col items-center justify-center h-full">
+                            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 8v8m-8-8v8m-4-4h16"></path>
+                            </svg>
+                            ガント表示
                         </button>
                     </div>
+
                     {{-- 新規タスク作成ボタン --}}
                     <button id="add-task-btn"
-                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition shadow-md">
-                        ➕ 新規タスク
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition shadow-md flex flex-col items-center justify-center text-sm h-full">
+                        <span class="text-2xl font-normal">➕</span>
+                        <span class="mt-1">新規タスク</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        {{-- [修正] メインのコンテンツエリア。残りの高さを全て使い、内部でスクロールさせる --}}
+        {{--  メインのコンテンツエリア。残りの高さを全て使い、内部でスクロールさせる --}}
         <div class="flex-grow p-6 overflow-y-auto flex flex-col">
 
             {{-- フラッシュメッセージ --}}
@@ -80,7 +96,7 @@
                 </div>
             </div>
 
-            {{-- [修正] WBSとガントチャートのラッパー。残りの高さを全て使う --}}
+            {{--  WBSとガントチャートのラッパー。残りの高さを全て使う --}}
             <div id="wbs-gantt-wrapper" class="flex-grow flex flex-col min-h-0">
 
                 {{-- WBS表示エリア --}}
@@ -479,30 +495,31 @@
                     const wbsBtn = document.getElementById('wbs-view-btn');
                     const ganttBtn = document.getElementById('gantt-view-btn');
 
+                    // ▼▼▼ このブロックを修正 ▼▼▼
                     const isWbs = view === 'wbs';
 
-                    // display プロパティで制御（hiddenクラスは使わない）
+                    // Tailwind CSSのクラス名を定義
+                    const activeClasses = 'bg-blue-500 text-white';
+                    const inactiveClasses = 'bg-transparent text-gray-600 hover:bg-gray-100';
+                    const baseClasses =
+                        'px-4 py-2 rounded-md transition text-sm font-bold flex flex-col items-center justify-center h-full';
+
+                    // display プロパティで表示/非表示を制御
                     wbsContainer.style.display = isWbs ? 'block' : 'none';
                     ganttContainer.style.display = isWbs ? 'none' : 'block';
 
                     // ボタンのスタイル更新
-                    if (isWbs) {
-                        wbsBtn.className = 'px-4 py-2 rounded-md bg-blue-500 text-white transition';
-                        ganttBtn.className = 'px-4 py-2 rounded-md hover:bg-gray-100 transition';
-                    } else {
-                        wbsBtn.className = 'px-4 py-2 rounded-md hover:bg-gray-100 transition';
-                        ganttBtn.className = 'px-4 py-2 rounded-md bg-blue-500 text-white transition';
-                    }
+                    wbsBtn.className = `${baseClasses} ${isWbs ? activeClasses : inactiveClasses}`;
+                    ganttBtn.className = `${baseClasses} ${!isWbs ? activeClasses : inactiveClasses}`;
+                    // ▲▲▲ 修正ブロックここまで ▲▲▲
 
                     // ガント表示時のレンダリング
                     if (!isWbs) {
                         if (!ganttInstance) {
-                            // 表示後に少し待ってからレンダリング
                             setTimeout(() => {
                                 renderGanttChart();
                             }, 150);
                         } else {
-                            // 既存のガントチャートをリサイズ
                             ganttInstance.render();
                         }
                     }
