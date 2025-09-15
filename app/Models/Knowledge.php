@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Laravel\Scout\Searchable;
 
 /**
  * @property int $id
@@ -51,7 +52,7 @@ use Illuminate\Support\Str;
  */
 class Knowledge extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
     protected $table = 'knowledges';
 
     protected $fillable = [
@@ -156,5 +157,20 @@ class Knowledge extends Model
     {
         // strip_tags()でHTMLタグを取り除いた後、Str::limit()で要約を作成
         return Str::limit(strip_tags($this->body), $length);
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        // 検索対象に含めたいカラムを指定
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'body' => $this->body,
+        ];
     }
 }

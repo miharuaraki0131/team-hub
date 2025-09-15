@@ -6,11 +6,18 @@
         Team-hub
     </a>
 
-    {{-- 中央：ナビゲーションリンク --}}
-    <div class="hidden lg:flex items-center gap-6  font-medium">
-        {{-- <a href="{{ route('dashboard') }}" class="hover:text-gray-800/80 transition-colors">ダッシュボード</a> --}}
-        {{-- <a href="{{ route('equipments.index') }}" class="hover:text-gray-800/80 transition-colors">備品一覧</a>
-        <a href="{{ route('my.reservations.index') }}" class="hover:text-gray-800/80 transition-colors">マイ予約</a> --}}
+    <!-- 検索フォーム -->
+    <div class="hidden sm:flex sm:items-center sm:ml-6">
+        <form action="{{ route('search') }}" method="GET" class="relative">
+            <input type="search" name="keyword" placeholder="検索..." value="{{ request('keyword') }}"
+                class="w-48 lg:w-64 px-4 py-2 text-sm text-gray-800 bg-white/80 rounded-full border-transparent focus:ring-2 focus:ring-blue-300 focus:bg-white transition">
+            <button type="submit" class="absolute right-0 top-0 mt-2 mr-3 text-gray-500">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </button>
+        </form>
     </div>
 
     {{-- 右側：通知とユーザーメニュー --}}

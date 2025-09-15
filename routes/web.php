@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\DivisionController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,7 +96,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
     });
 
+    // 通知一覧ページ
     Route::get('/notifications-page', [NotificationController::class, 'showNotificationsPage'])->name('notifications.page');
+
+    // 検索機能
+    Route::get('/search', [SearchController::class, 'search'])->name('search');
 
     // 管理者専用エリア
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {

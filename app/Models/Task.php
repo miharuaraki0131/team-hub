@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+use Laravel\Scout\Searchable;
 
 /**
  * @property int $id
@@ -76,7 +77,7 @@ use Carbon\Carbon;
  */
 class Task extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
 
     protected $fillable = [
         'project_id',
@@ -314,5 +315,18 @@ class Task extends Model
             ->where('status', '!=', 'done');
     }
 
-
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray(): array
+    {
+        // 検索対象に含めたいカラムを指定
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'description' => $this->description,
+        ];
+    }
 }
