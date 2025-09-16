@@ -23,16 +23,25 @@
                     </div>
                 </div>
 
-                {{-- 部署画像 --}}
+                {{-- プロフィール画像 --}}
                 <div>
                     <label for="avatar" class="block text-sm font-medium text-gray-700">プロフィール画像</label>
                     <div class="mt-1">
-                        <input type="file" name="avatar" id="avatar"
-                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        {{-- 現在の画像がある場合は表示 --}}
+                        @if ($user->avatar_path)
+                            <div class="mb-3">
+                                <img src="{{ $user->avatar_url }}" alt="現在のプロフィール画像"
+                                    class="h-20 w-20 rounded-full object-cover">
+                                <p class="text-sm text-gray-500 mt-1">現在のプロフィール画像</p>
+                            </div>
+                        @endif
+
+                        <input type="file" name="avatar" id="avatar" accept="image/*"
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        @error('avatar')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    @error('avatar')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
                 </div>
 
                 {{-- メールアドレス --}}
@@ -109,17 +118,6 @@
                     </div>
                 </div>
 
-                {{-- 画像アップロード --}}
-                <div>
-                    <label for="image" class="block text-sm font-medium text-gray-700">プロフィール画像</label>
-                    <div class="mt-1">
-                        <input type="file" name="image" id="image"
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                        @error('image')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
 
             </div>
 
